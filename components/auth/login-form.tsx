@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from "next/navigation";
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { z } from 'zod';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/components/context/auth';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { login } = useAuth();
+    // const { login } = useAuth();
+    const router = useRouter()
 
     const {
         register,
@@ -36,7 +37,8 @@ export function LoginForm() {
     const onSubmit = async (data: LoginFormData) => {
         try {
             setError(null);
-            await login(data.email, data.password);
+            // await login(data.email, data.password);
+            router.push('/dashboard')
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Login failed');
         }
