@@ -2,13 +2,8 @@
 
 import {
   Save,
-  Building,
-  CreditCard,
-  Mail,
-  Cloud,
+  User,
   Bell,
-  Shield,
-  Globe,
 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -20,86 +15,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { mockUsers } from '@/data/dummy';
 
-const companySettingsSchema = z.object({
-  companyName: z.string().min(1, 'Company name is required'),
+const profileSettingsSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone number is required'),
-  address: z.string().min(1, 'Address is required'),
-  website: z.string().url('Invalid website URL').optional().or(z.literal('')),
-  taxRate: z.number().min(0).max(100),
-  currency: z.string().min(1, 'Currency is required'),
-  timezone: z.string().min(1, 'Timezone is required'),
-});
-
-const integrationSettingsSchema = z.object({
-  paystackPublicKey: z.string().optional(),
-  paystackSecretKey: z.string().optional(),
-  sendgridApiKey: z.string().optional(),
-  awsAccessKey: z.string().optional(),
-  awsSecretKey: z.string().optional(),
-  awsBucket: z.string().optional(),
+  role: z.string().min(1, 'Role is required'),
 });
 
 const notificationSettingsSchema = z.object({
   emailNotifications: z.boolean(),
-  smsNotifications: z.boolean(),
-  pushNotifications: z.boolean(),
   bookingAlerts: z.boolean(),
   paymentAlerts: z.boolean(),
   systemAlerts: z.boolean(),
 });
 
-type CompanySettings = z.infer<typeof companySettingsSchema>;
-type IntegrationSettings = z.infer<typeof integrationSettingsSchema>;
+type ProfileSettings = z.infer<typeof profileSettingsSchema>;
 type NotificationSettings = z.infer<typeof notificationSettingsSchema>;
 
-// Mock current settings
-const mockCompanySettings: CompanySettings = {
-  companyName: 'SavannahTrail Tours',
-  email: 'info@savannahtrail.com',
-  phone: '+233 30 123 4567',
-  address: 'Accra, Ghana',
-  website: 'https://savannahtrail.com',
-  taxRate: 12.5,
-  currency: 'GHS',
-  timezone: 'GMT',
-};
-
-const mockIntegrationSettings: IntegrationSettings = {
-  paystackPublicKey: 'pk_test_****',
-  paystackSecretKey: 'sk_test_****',
-  sendgridApiKey: 'SG.****',
-  awsAccessKey: 'AKIA****',
-  awsSecretKey: '****',
-  awsBucket: 'savannahtrail-uploads',
+// Mock current settings based on the current user
+const mockProfileSettings: ProfileSettings = {
+  name: `${mockUsers[0].firstName} ${mockUsers[0].lastName}`,
+  email: mockUsers[0].email,
+  role: mockUsers[0].role,
 };
 
 const mockNotificationSettings: NotificationSettings = {
   emailNotifications: true,
-  smsNotifications: false,
-  pushNotifications: true,
   bookingAlerts: true,
   paymentAlerts: true,
   systemAlerts: true,
 };
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('company');
+  const [activeTab, setActiveTab] = useState('profile');
 
-  const companyForm = useForm<CompanySettings>({
-    resolver: zodResolver(companySettingsSchema),
-    defaultValues: mockCompanySettings,
-  });
-
-  const integrationForm = useForm<IntegrationSettings>({
-    resolver: zodResolver(integrationSettingsSchema),
-    defaultValues: mockIntegrationSettings,
+  const profileForm = useForm<ProfileSettings>({
+    resolver: zodResolver(profileSettingsSchema),
+    defaultValues: mockProfileSettings,
   });
 
   const notificationForm = useForm<NotificationSettings>({
@@ -107,27 +64,20 @@ export default function SettingsPage() {
     defaultValues: mockNotificationSettings,
   });
 
-  const onCompanySubmit = async (data: CompanySettings) => {
+  const onProfileSubmit = async (data: ProfileSettings) => {
     try {
       // API call would go here
-      toast.success('Company settings updated successfully');
+      console.log('Profile data:', data);
+      toast.success('Profile updated successfully');
     } catch (error) {
-      toast.error('Failed to update company settings');
-    }
-  };
-
-  const onIntegrationSubmit = async (data: IntegrationSettings) => {
-    try {
-      // API call would go here
-      toast.success('Integration settings updated successfully');
-    } catch (error) {
-      toast.error('Failed to update integration settings');
+      toast.error('Failed to update profile');
     }
   };
 
   const onNotificationSubmit = async (data: NotificationSettings) => {
     try {
       // API call would go here
+      console.log('Notification data:', data);
       toast.success('Notification settings updated successfully');
     } catch (error) {
       toast.error('Failed to update notification settings');
@@ -140,229 +90,110 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
           <p className="text-muted-foreground">
-            Manage system configuration and preferences
+            Manage your profile and notification preferences
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="company">
-              <Building className="mr-2 h-4 w-4" />
-              Company
-            </TabsTrigger>
-            <TabsTrigger value="integrations">
-              <Cloud className="mr-2 h-4 w-4" />
-              Integrations
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile">
+              <User className="mr-2 h-4 w-4" />
+              Profile
             </TabsTrigger>
             <TabsTrigger value="notifications">
               <Bell className="mr-2 h-4 w-4" />
               Notifications
             </TabsTrigger>
-            <TabsTrigger value="security">
-              <Shield className="mr-2 h-4 w-4" />
-              Security
-            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="company">
+          <TabsContent value="profile">
             <Card>
               <CardHeader>
-                <CardTitle>Company Information</CardTitle>
+                <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
-                  Update your company details and business settings
+                  Update your personal information and account details
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={companyForm.handleSubmit(onCompanySubmit)} className="space-y-6">
+                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="companyName">Company Name</Label>
+                      <Label htmlFor="name">Full Name</Label>
                       <Input
-                        id="companyName"
-                        {...companyForm.register('companyName')}
-                      // error={companyForm.formState.errors.companyName?.message}
+                        id="name"
+                        {...profileForm.register('name')}
                       />
+                      {profileForm.formState.errors.name && (
+                        <p className="text-sm text-red-500">
+                          {profileForm.formState.errors.name.message}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">Email Address</Label>
                       <Input
                         id="email"
                         type="email"
-                        {...companyForm.register('email')}
-                      // error={companyForm.formState.errors.email?.message}
+                        {...profileForm.register('email')}
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        {...companyForm.register('phone')}
-                      // error={companyForm.formState.errors.phone?.message}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="website">Website</Label>
-                      <Input
-                        id="website"
-                        {...companyForm.register('website')}
-                      // error={companyForm.formState.errors.website?.message}
-                      />
+                      {profileForm.formState.errors.email && (
+                        <p className="text-sm text-red-500">
+                          {profileForm.formState.errors.email.message}
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="address">Address</Label>
-                    <Textarea
-                      id="address"
-                      {...companyForm.register('address')}
-                    // error={companyForm.formState.errors.address?.message}
+                    <Label htmlFor="role">Role</Label>
+                    <Input
+                      id="role"
+                      {...profileForm.register('role')}
+                      disabled
+                      className="bg-muted"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Your role cannot be changed. Contact an administrator if you need role modifications.
+                    </p>
                   </div>
 
                   <Separator />
 
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="taxRate">Tax Rate (%)</Label>
-                      <Input
-                        id="taxRate"
-                        type="number"
-                        step="0.1"
-                        {...companyForm.register('taxRate', { valueAsNumber: true })}
-                      // error={companyForm.formState.errors.taxRate?.message}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="currency">Currency</Label>
-                      <Input
-                        id="currency"
-                        {...companyForm.register('currency')}
-                      // error={companyForm.formState.errors.currency?.message}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="timezone">Timezone</Label>
-                      <Input
-                        id="timezone"
-                        {...companyForm.register('timezone')}
-                      // error={companyForm.formState.errors.timezone?.message}
-                      />
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Account Security</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>Two-Factor Authentication</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Add an extra layer of security to your account
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Enable 2FA
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>Change Password</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Update your account password
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Change Password
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
-                  <Button type="submit" disabled={companyForm.formState.isSubmitting}>
+                  <Button type="submit" disabled={profileForm.formState.isSubmitting}>
                     <Save className="mr-2 h-4 w-4" />
-                    Save Company Settings
+                    Save Profile
                   </Button>
                 </form>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="integrations">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Payment Integration</CardTitle>
-                  <CardDescription>
-                    Configure Paystack payment gateway settings
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={integrationForm.handleSubmit(onIntegrationSubmit)} className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="paystackPublicKey">Paystack Public Key</Label>
-                        <Input
-                          id="paystackPublicKey"
-                          type="password"
-                          {...integrationForm.register('paystackPublicKey')}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="paystackSecretKey">Paystack Secret Key</Label>
-                        <Input
-                          id="paystackSecretKey"
-                          type="password"
-                          {...integrationForm.register('paystackSecretKey')}
-                        />
-                      </div>
-                    </div>
-                    <Button type="submit" disabled={integrationForm.formState.isSubmitting}>
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      Save Payment Settings
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Email Integration</CardTitle>
-                  <CardDescription>
-                    Configure SendGrid for email notifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="sendgridApiKey">SendGrid API Key</Label>
-                      <Input
-                        id="sendgridApiKey"
-                        type="password"
-                        {...integrationForm.register('sendgridApiKey')}
-                      />
-                    </div>
-                    <Button type="submit" disabled={integrationForm.formState.isSubmitting}>
-                      <Mail className="mr-2 h-4 w-4" />
-                      Save Email Settings
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>File Storage</CardTitle>
-                  <CardDescription>
-                    Configure AWS S3 for file uploads
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="awsAccessKey">AWS Access Key</Label>
-                        <Input
-                          id="awsAccessKey"
-                          type="password"
-                          {...integrationForm.register('awsAccessKey')}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="awsSecretKey">AWS Secret Key</Label>
-                        <Input
-                          id="awsSecretKey"
-                          type="password"
-                          {...integrationForm.register('awsSecretKey')}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="awsBucket">S3 Bucket Name</Label>
-                      <Input
-                        id="awsBucket"
-                        {...integrationForm.register('awsBucket')}
-                      />
-                    </div>
-                    <Button type="submit" disabled={integrationForm.formState.isSubmitting}>
-                      <Cloud className="mr-2 h-4 w-4" />
-                      Save Storage Settings
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </TabsContent>
 
           <TabsContent value="notifications">
@@ -376,7 +207,7 @@ export default function SettingsPage() {
               <CardContent>
                 <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-6">
                   <div className="space-y-4">
-                    <h4 className="font-medium">Notification Channels</h4>
+                    <h4 className="font-medium">Email Notifications</h4>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
@@ -386,29 +217,10 @@ export default function SettingsPage() {
                           </p>
                         </div>
                         <Switch
-                          {...notificationForm.register('emailNotifications')}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>SMS Notifications</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Receive notifications via SMS
-                          </p>
-                        </div>
-                        <Switch
-                          {...notificationForm.register('smsNotifications')}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Push Notifications</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Receive browser push notifications
-                          </p>
-                        </div>
-                        <Switch
-                          {...notificationForm.register('pushNotifications')}
+                          checked={notificationForm.watch('emailNotifications')}
+                          onCheckedChange={(checked) => 
+                            notificationForm.setValue('emailNotifications', checked)
+                          }
                         />
                       </div>
                     </div>
@@ -427,7 +239,10 @@ export default function SettingsPage() {
                           </p>
                         </div>
                         <Switch
-                          {...notificationForm.register('bookingAlerts')}
+                          checked={notificationForm.watch('bookingAlerts')}
+                          onCheckedChange={(checked) => 
+                            notificationForm.setValue('bookingAlerts', checked)
+                          }
                         />
                       </div>
                       <div className="flex items-center justify-between">
@@ -438,7 +253,10 @@ export default function SettingsPage() {
                           </p>
                         </div>
                         <Switch
-                          {...notificationForm.register('paymentAlerts')}
+                          checked={notificationForm.watch('paymentAlerts')}
+                          onCheckedChange={(checked) => 
+                            notificationForm.setValue('paymentAlerts', checked)
+                          }
                         />
                       </div>
                       <div className="flex items-center justify-between">
@@ -449,7 +267,10 @@ export default function SettingsPage() {
                           </p>
                         </div>
                         <Switch
-                          {...notificationForm.register('systemAlerts')}
+                          checked={notificationForm.watch('systemAlerts')}
+                          onCheckedChange={(checked) => 
+                            notificationForm.setValue('systemAlerts', checked)
+                          }
                         />
                       </div>
                     </div>
@@ -462,75 +283,6 @@ export default function SettingsPage() {
                 </form>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="security">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Security Settings</CardTitle>
-                  <CardDescription>
-                    Manage security policies and access controls
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Session Management</h4>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Auto-logout after inactivity</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Automatically log out users after 30 minutes of inactivity
-                          </p>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Require password change</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Force users to change passwords every 90 days
-                          </p>
-                        </div>
-                        <Switch />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Access Control</h4>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>IP Whitelist</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Restrict access to specific IP addresses
-                          </p>
-                        </div>
-                        <Switch />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Two-Factor Authentication</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Require 2FA for all admin users
-                          </p>
-                        </div>
-                        <Switch />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button>
-                    <Shield className="mr-2 h-4 w-4" />
-                    Save Security Settings
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </TabsContent>
         </Tabs>
       </div>
