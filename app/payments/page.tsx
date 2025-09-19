@@ -19,6 +19,8 @@ import { PaymentEvent, PaymentEventType, PaymentMethod } from '@/types/payment';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { TableSkeleton } from '@/components/loading/table-skeleton';
+import { EmptyTable } from '@/components/empty-states/empty-table';
 import { mockPaymentEvents } from "@/data/dummy";
 
 const getEventTypeColor = (type: PaymentEventType) => {
@@ -52,6 +54,7 @@ const getMethodIcon = (method: PaymentMethod) => {
 
 export default function PaymentsPage() {
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const limit = 20;
 
   // const { data: paymentsData, isLoading, refetch } = useQuery({
@@ -84,6 +87,76 @@ export default function PaymentsPage() {
       console.error('Failed to verify payment:', error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Payment Events</h1>
+              <p className="text-muted-foreground">
+                Monitor payment transactions and handle failed payments
+              </p>
+            </div>
+            <Button disabled>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
+
+          {/* Payment Stats Skeleton */}
+          <div className="grid gap-4 md:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-4 w-4 bg-gray-300 rounded" />
+                    <span className="text-sm font-medium">Loading...</span>
+                  </div>
+                  <div className="text-2xl font-bold mt-2">--</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Payment Events</CardTitle>
+              <CardDescription>
+                Loading payment transaction data...
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <div className="h-4 w-4 bg-gray-300 rounded" />
+                        <div className="h-4 w-4 bg-gray-300 rounded" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="h-4 w-48 bg-gray-300 rounded" />
+                        <div className="h-3 w-64 bg-gray-200 rounded" />
+                        <div className="h-3 w-32 bg-gray-200 rounded" />
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <div className="h-4 w-20 bg-gray-300 rounded mb-1" />
+                        <div className="h-3 w-16 bg-gray-200 rounded" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -157,51 +230,71 @@ export default function PaymentsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {paymentsData.events.map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      {getEventIcon(event.type)}
-                      {getMethodIcon(event.method)}
-                    </div>
-                    <div className="space-y-1">
+            {paymentsData.events.length === 0 ? (
+              <EmptyTable
+                title="No payment events found"
+                description="Payment transactions will appear here once customers start making bookings and payments."
+                icon={CreditCard}
+                showAction={false}
+              />
+            ) : (
+              <div className="space-y-4">
+                {paymentsData.events.map((event) => (
+                  <div
+                    key={event.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-2">
-                        <span className="font-medium">{event.customerName}</span>
-                        <Badge className={getEventTypeColor(event.type)}>
-                          {event.type.replace('_', ' ').toUpperCase()}
-                        </Badge>
+                        {getEventIcon(event.type)}
+                        {getMethodIcon(event.method)}
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        Booking: {event.bookingId} • {format(new Date(event.timestamp), 'MMM dd, yyyy HH:mm')}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Reference: {event.reference}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <div className="font-medium">GHS {event.amount.toLocaleString()}</div>
-                      <div className="text-sm text-muted-foreground capitalize">
-                        {event.method.replace('_', ' ')}
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium">{event.customerName}</span>
+                          <Badge className={getEventTypeColor(event.type)}>
+                            {event.type.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Booking: {event.bookingId} • {format(new Date(event.timestamp), 'MMM dd, yyyy HH:mm')}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Reference: {event.reference}
+                        </div>
                       </div>
                     </div>
 
-                    {event.type === 'payment_failed' && (
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRetryPayment(event.id)}
-                        >
-                          <RefreshCw className="mr-1 h-3 w-3" />
-                          Retry
-                        </Button>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <div className="font-medium">GHS {event.amount.toLocaleString()}</div>
+                        <div className="text-sm text-muted-foreground capitalize">
+                          {event.method.replace('_', ' ')}
+                        </div>
+                      </div>
+
+                      {event.type === 'payment_failed' && (
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleRetryPayment(event.id)}
+                          >
+                            <RefreshCw className="mr-1 h-3 w-3" />
+                            Retry
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleVerifyPayment(event.id)}
+                          >
+                            <CheckCircle className="mr-1 h-3 w-3" />
+                            Verify
+                          </Button>
+                        </div>
+                      )}
+
+                      {event.type === 'payment_initiated' && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -210,23 +303,12 @@ export default function PaymentsPage() {
                           <CheckCircle className="mr-1 h-3 w-3" />
                           Verify
                         </Button>
-                      </div>
-                    )}
-
-                    {event.type === 'payment_initiated' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleVerifyPayment(event.id)}
-                      >
-                        <CheckCircle className="mr-1 h-3 w-3" />
-                        Verify
-                      </Button>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

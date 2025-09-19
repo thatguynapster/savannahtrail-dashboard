@@ -26,11 +26,13 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { DetailSkeleton } from '@/components/loading/detail-skeleton';
 import { mockPackages, mockUsers } from "@/data/dummy";
 
 export default function PackageDetailPage() {
   const params = useParams();
   const packageId = params.id as string;
+  const [isLoading, setIsLoading] = useState(false);
   // const { user } = useAuth();
   const user = mockUsers[0];
 
@@ -40,15 +42,13 @@ export default function PackageDetailPage() {
   // });
   const pkg = mockPackages.find(p => p.id === packageId);
 
-  // if (isLoading) {
-  //   return (
-  //     <MainLayout>
-  //       <div className="flex items-center justify-center h-64">
-  //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
-  //       </div>
-  //     </MainLayout>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <DetailSkeleton />
+      </MainLayout>
+    );
+  }
 
   if (!pkg) {
     return (

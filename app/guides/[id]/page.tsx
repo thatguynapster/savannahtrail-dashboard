@@ -25,11 +25,13 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Guide } from "@/types/guide";
+import { DetailSkeleton } from '@/components/loading/detail-skeleton';
 import { mockGuides } from "@/data/dummy";
 
 export default function GuideDetailPage() {
   const params = useParams();
   const guideId = params.id as string;
+  const [isLoading, setIsLoading] = useState(false);
   const guide = mockGuides.find(g => g.id === guideId) as Guide;
 
   // const { data: guide, isLoading } = useQuery({
@@ -43,15 +45,13 @@ export default function GuideDetailPage() {
   //   enabled: !!guide,
   // });
 
-  // if (isLoading) {
-  //   return (
-  //     <MainLayout>
-  //       <div className="flex items-center justify-center h-64">
-  //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
-  //       </div>
-  //     </MainLayout>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <DetailSkeleton />
+      </MainLayout>
+    );
+  }
 
   if (!guide) {
     return (

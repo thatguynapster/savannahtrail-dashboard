@@ -27,6 +27,10 @@ import {
   Eye,
 } from 'lucide-react';
 import Link from 'next/link';
+import { DashboardSkeleton } from '@/components/loading/dashboard-skeleton';
+import { EmptyDashboard } from '@/components/empty-states/empty-dashboard';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
 // Mock data for development
 const mockKPIs = {
@@ -79,6 +83,31 @@ const mockRecentActivity = [
 ];
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  // Simulate loading state
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ['dashboard-data'],
+  //   queryFn: () => fetchDashboardData(),
+  // });
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <DashboardSkeleton />
+      </MainLayout>
+    );
+  }
+
+  // Show empty state if no data
+  if (isEmpty) {
+    return (
+      <MainLayout>
+        <EmptyDashboard />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>

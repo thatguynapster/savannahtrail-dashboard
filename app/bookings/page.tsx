@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Calendar } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -30,7 +31,9 @@ import { DataTable } from '@/components/ui/data-table';
 import { bookingsApi } from '@/lib/api/bookings';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-// import { mockBookings } from "@/data/dummy";
+import { TableSkeleton } from '@/components/loading/table-skeleton';
+import { EmptyTable } from '@/components/empty-states/empty-table';
+import { mockBookings } from "@/data/dummy";
 
 const getStatusColor = (status: BookingStatus) => {
   const colors = {
@@ -176,17 +179,39 @@ export default function BookingsPage() {
     queryKey: ['bookings', page, limit],
     queryFn: () => bookingsApi.getBookings(page, limit),
     initialData: {
-      bookings: [],
-      total: 0,
+      bookings: mockBookings,
+      total: mockBookings.length,
       page: 1,
       limit: 10,
     },
   });
 
-  useEffect(() => {
-    console.log('bookings loading:', isLoading)
-  }, [isLoading])
-
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Bookings</h1>
+              <p className="text-muted-foreground">
+                Manage tour bookings and customer reservations
+              </p>
+            </div>
+            <Button disabled>
+              <Plus className="mr-2 h-4 w-4" />
+              New Booking
+            </Button>
+          </div>
+          <TableSkeleton 
+            title="All Bookings" 
+            description="Loading bookings data..."
+            rows={8}
+            columns={8}
+          />
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -214,12 +239,22 @@ export default function BookingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTable
-              columns={columns}
-              data={bookingsData.bookings}
-              searchKey="customer"
-              searchPlaceholder="Search customers..."
-            />
+            {bookingsData.bookings.length === 0 ? (
+              <EmptyTable
+                title="No bookings found"
+                description="You haven't received any bookings yet. Once customers start booking your tours, they'll appear here."
+                icon={Calendar}
+                actionLabel="Create Package"
+                onAction={() => window.location.href = '/packages/new'}
+              />
+            ) : (
+              <DataTable
+                columns={columns}
+                data={bookingsData.bookings}
+                searchKey="customer"
+                searchPlaceholder="Search customers..."
+              />
+            )}
           </CardContent>
         </Card>
       </div>

@@ -23,12 +23,14 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Booking } from "@/types/booking";
+import { DetailSkeleton } from '@/components/loading/detail-skeleton';
 import { mockBookings } from "@/data/dummy";
 
 
 export default function BookingDetailPage() {
   const params = useParams();
   const bookingId = params.id as string;
+  const [isLoading, setIsLoading] = useState(false);
 
   const mockBooking = mockBookings.find(b => b.id === bookingId) as Booking;
 
@@ -39,15 +41,13 @@ export default function BookingDetailPage() {
   // });
   const booking = mockBooking;
 
-  // if (isLoading) {
-  //   return (
-  //     <MainLayout>
-  //       <div className="flex items-center justify-center h-64">
-  //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
-  //       </div>
-  //     </MainLayout>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <DetailSkeleton />
+      </MainLayout>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     const colors = {

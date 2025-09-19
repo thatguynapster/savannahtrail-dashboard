@@ -31,6 +31,8 @@ import { Guide, GuideStatus } from '@/types/guide';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { TableSkeleton } from '@/components/loading/table-skeleton';
+import { EmptyTable } from '@/components/empty-states/empty-table';
 import { mockGuides } from "@/data/dummy";
 
 const getStatusColor = (status: GuideStatus) => {
@@ -182,6 +184,7 @@ const columns: ColumnDef<Guide>[] = [
 
 export default function GuidesPage() {
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const limit = 10;
 
   // const { data: guidesData, isLoading } = useQuery({
@@ -195,6 +198,49 @@ export default function GuidesPage() {
   //   },
   // });
   const guidesData = mockGuides;
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Tour Guides</h1>
+              <p className="text-muted-foreground">
+                Manage tour guides and their availability
+              </p>
+            </div>
+            <Button disabled>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Guide
+            </Button>
+          </div>
+
+          {/* Quick Stats Skeleton */}
+          <div className="grid gap-4 md:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                    <span className="text-sm font-medium">Loading...</span>
+                  </div>
+                  <div className="text-2xl font-bold mt-2">--</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <TableSkeleton 
+            title="All Guides" 
+            description="Loading guides data..."
+            rows={5}
+            columns={6}
+          />
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -270,12 +316,22 @@ export default function GuidesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTable
-              columns={columns}
-              data={guidesData}
-              searchKey="firstName"
-              searchPlaceholder="Search guides..."
-            />
+            {guidesData.length === 0 ? (
+              <EmptyTable
+                title="No guides found"
+                description="Add experienced tour guides to lead your tours and provide exceptional customer experiences."
+                icon={Users}
+                actionLabel="Add Guide"
+                onAction={() => window.location.href = '/guides/new'}
+              />
+            ) : (
+              <DataTable
+                columns={columns}
+                data={guidesData}
+                searchKey="firstName"
+                searchPlaceholder="Search guides..."
+              />
+            )}
           </CardContent>
         </Card>
       </div>

@@ -29,6 +29,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
+import { TableSkeleton } from '@/components/loading/table-skeleton';
+import { EmptyTable } from '@/components/empty-states/empty-table';
 import { mockPackages } from "@/data/dummy";
 
 const getStatusColor = (status: PackageStatus) => {
@@ -167,9 +169,37 @@ const columns: ColumnDef<Package>[] = [
 
 export default function PackagesPage() {
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const limit = 10;
 
-  const packagesData = mockPackages
+  const packagesData = mockPackages;
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Packages</h1>
+              <p className="text-muted-foreground">
+                Manage tour packages and their availability
+              </p>
+            </div>
+            <Button disabled>
+              <Plus className="mr-2 h-4 w-4" />
+              New Package
+            </Button>
+          </div>
+          <TableSkeleton 
+            title="All Packages" 
+            description="Loading packages data..."
+            rows={6}
+            columns={6}
+          />
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -197,12 +227,22 @@ export default function PackagesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTable
-              columns={columns}
-              data={packagesData}
-              searchKey="name"
-              searchPlaceholder="Search packages..."
-            />
+            {packagesData.length === 0 ? (
+              <EmptyTable
+                title="No packages found"
+                description="Create your first tour package to start accepting bookings from customers."
+                icon={Package}
+                actionLabel="Create Package"
+                onAction={() => window.location.href = '/packages/new'}
+              />
+            ) : (
+              <DataTable
+                columns={columns}
+                data={packagesData}
+                searchKey="name"
+                searchPlaceholder="Search packages..."
+              />
+            )}
           </CardContent>
         </Card>
       </div>
