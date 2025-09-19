@@ -1,14 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { MainLayout } from '@/components/layout/main-layout';
-import { DataTable } from '@/components/ui/data-table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Booking, BookingStatus, PaymentStatus } from '@/types/booking';
-import { format } from 'date-fns';
 import {
   MoreHorizontal,
   Eye,
@@ -18,6 +9,12 @@ import {
   Download,
   Plus,
 } from 'lucide-react';
+import { ColumnDef } from '@tanstack/react-table';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,8 +23,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
-import { mockBookings } from "@/data/dummy";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Booking, BookingStatus, PaymentStatus } from '@/types/booking';
+import { MainLayout } from '@/components/layout/main-layout';
+import { DataTable } from '@/components/ui/data-table';
+import { bookingsApi } from '@/lib/api/bookings';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+// import { mockBookings } from "@/data/dummy";
 
 const getStatusColor = (status: BookingStatus) => {
   const colors = {
@@ -169,7 +172,21 @@ export default function BookingsPage() {
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  const bookingsData = mockBookings
+  const { data: bookingsData, isLoading } = useQuery({
+    queryKey: ['bookings', page, limit],
+    queryFn: () => bookingsApi.getBookings(page, limit),
+    initialData: {
+      bookings: [],
+      total: 0,
+      page: 1,
+      limit: 10,
+    },
+  });
+
+  useEffect(() => {
+    console.log('bookings loading:', isLoading)
+  }, [isLoading])
+
 
   return (
     <MainLayout>
@@ -199,7 +216,7 @@ export default function BookingsPage() {
           <CardContent>
             <DataTable
               columns={columns}
-              data={bookingsData}
+              data={bookingsData.bookings}
               searchKey="customer"
               searchPlaceholder="Search customers..."
             />

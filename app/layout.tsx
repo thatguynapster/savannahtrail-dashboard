@@ -1,9 +1,9 @@
 import { Toaster } from '@/components/ui/sonner';
-import { ThemeProvider } from 'next-themes';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 
 import './globals.css';
+import { Providers } from "@/components/providers";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,14 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Providers>
           {children}
-        </ThemeProvider>
+        </Providers>
         <Toaster />
       </body>
     </html>
