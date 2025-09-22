@@ -11,6 +11,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Users,
 } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -231,8 +232,8 @@ export default function GuidesPage() {
             ))}
           </div>
 
-          <TableSkeleton 
-            title="All Guides" 
+          <TableSkeleton
+            title="All Guides"
             description="Loading guides data..."
             rows={5}
             columns={6}

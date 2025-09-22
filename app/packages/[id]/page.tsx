@@ -28,6 +28,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { DetailSkeleton } from '@/components/loading/detail-skeleton';
 import { mockPackages, mockUsers } from "@/data/dummy";
+import { useState } from "react";
 
 export default function PackageDetailPage() {
   const params = useParams();

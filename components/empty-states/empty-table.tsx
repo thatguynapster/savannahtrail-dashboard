@@ -5,19 +5,19 @@ import { DivideIcon as LucideIcon } from "lucide-react";
 interface EmptyTableProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: typeof LucideIcon;
   actionLabel?: string;
   onAction?: () => void;
   showAction?: boolean;
 }
 
-export function EmptyTable({ 
-  title, 
-  description, 
-  icon: Icon, 
-  actionLabel = "Add New", 
+export function EmptyTable({
+  title,
+  description,
+  icon: Icon,
+  actionLabel = "Add New",
   onAction,
-  showAction = true 
+  showAction = true
 }: EmptyTableProps) {
   return (
     <Card>

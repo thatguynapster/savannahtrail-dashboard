@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { Guide } from "@/types/guide";
 import { DetailSkeleton } from '@/components/loading/detail-skeleton';
 import { mockGuides } from "@/data/dummy";
+import { useState } from "react";
 
 export default function GuideDetailPage() {
   const params = useParams();

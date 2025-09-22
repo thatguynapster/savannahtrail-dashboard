@@ -19,6 +19,7 @@ import {
   Star,
   Clock,
   Users,
+  Package as PackageIcon,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -190,8 +191,8 @@ export default function PackagesPage() {
               New Package
             </Button>
           </div>
-          <TableSkeleton 
-            title="All Packages" 
+          <TableSkeleton
+            title="All Packages"
             description="Loading packages data..."
             rows={6}
             columns={6}
@@ -231,7 +232,7 @@ export default function PackagesPage() {
               <EmptyTable
                 title="No packages found"
                 description="Create your first tour package to start accepting bookings from customers."
-                icon={Package}
+                icon={PackageIcon}
                 actionLabel="Create Package"
                 onAction={() => window.location.href = '/packages/new'}
               />
