@@ -1,11 +1,12 @@
 import { apiClient } from "./client";
 import queryString from "query-string";
 import { Booking, BookingFilters, BookingUpdateRequest } from "@/types/booking";
+import { APIResponse } from "@/types/api";
 
 export interface BookingsResponse {
-	bookings: Booking[];
 	total: number;
 	page: number;
+	pages: number;
 	limit: number;
 }
 
@@ -14,9 +15,21 @@ export const bookingsApi = {
 		page = 1,
 		limit = 10,
 		filters?: BookingFilters
-	): Promise<BookingsResponse> => {
+	): Promise<
+		APIResponse<
+			BookingsResponse & {
+				docs: Booking[];
+			}
+		>
+	> => {
 		console.log("getting bookings");
-		return apiClient.get<BookingsResponse>(
+		return apiClient.get<
+			APIResponse<
+				BookingsResponse & {
+					docs: Booking[];
+				}
+			>
+		>(
 			`/bookings?${queryString.stringify({
 				page: page.toString(),
 				limit: limit.toString(),
@@ -25,8 +38,8 @@ export const bookingsApi = {
 		);
 	},
 
-	getBooking: async (id: string): Promise<Booking> => {
-		return apiClient.get<Booking>(`/bookings/${id}`);
+	getBooking: async (id: string): Promise<APIResponse<BookingsResponse>> => {
+		return apiClient.get<APIResponse<BookingsResponse>>(`/bookings/${id}`);
 	},
 
 	updateBooking: async (

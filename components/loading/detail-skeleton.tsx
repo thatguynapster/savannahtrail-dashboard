@@ -31,7 +31,7 @@ export function DetailSkeleton() {
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />
             </div>
-            
+
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (

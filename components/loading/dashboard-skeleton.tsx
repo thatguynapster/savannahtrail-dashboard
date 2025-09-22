@@ -43,7 +43,7 @@ export function DashboardSkeleton() {
             <Skeleton className="h-80 w-full" />
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-40" />

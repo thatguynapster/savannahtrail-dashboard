@@ -1,17 +1,7 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
-import { MainLayout } from '@/components/layout/main-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-// import { bookingsApi } from '@/lib/api/bookings';
-import { format } from 'date-fns';
 import {
   ArrowLeft,
-  Calendar,
   Users,
   MapPin,
   Phone,
@@ -19,12 +9,20 @@ import {
   Download,
   UserCheck,
   Check,
-  X,
 } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { format } from 'date-fns';
 import Link from 'next/link';
-import { Booking } from "@/types/booking";
-import { DetailSkeleton } from '@/components/loading/detail-skeleton';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MainLayout } from '@/components/layout/main-layout';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { mockBookings } from "@/data/dummy";
+import { Booking } from "@/types/booking";
+import { useState } from "react";
+import { DetailSkeleton } from "@/components/loading/detail-skeleton";
 
 
 export default function BookingDetailPage() {

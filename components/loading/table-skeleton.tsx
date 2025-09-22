@@ -8,11 +8,11 @@ interface TableSkeletonProps {
   columns?: number;
 }
 
-export function TableSkeleton({ 
-  title = "Loading...", 
-  description = "Please wait while we load the data", 
-  rows = 5, 
-  columns = 6 
+export function TableSkeleton({
+  title = "Loading...",
+  description = "Please wait while we load the data",
+  rows = 5,
+  columns = 6
 }: TableSkeletonProps) {
   return (
     <Card>
@@ -27,7 +27,7 @@ export function TableSkeleton({
             <Skeleton className="h-10 w-80" />
             <Skeleton className="h-10 w-24" />
           </div>
-          
+
           {/* Table skeleton */}
           <div className="rounded-md border">
             {/* Header */}
@@ -38,7 +38,7 @@ export function TableSkeleton({
                 ))}
               </div>
             </div>
-            
+
             {/* Rows */}
             {Array.from({ length: rows }).map((_, i) => (
               <div key={i} className="border-b p-4 last:border-b-0">
@@ -50,7 +50,7 @@ export function TableSkeleton({
               </div>
             ))}
           </div>
-          
+
           {/* Pagination skeleton */}
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-32" />
