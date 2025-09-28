@@ -28,7 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
 const guideSchema = z.object({
-    firstName: z.string().min(1, 'First name is required'),
+    name: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
     email: z.string().email('Invalid email address'),
     phone: z.string().min(1, 'Phone number is required'),
@@ -73,7 +73,7 @@ export default function NewGuidePage() {
     const form = useForm<GuideFormData>({
         resolver: zodResolver(guideSchema),
         defaultValues: {
-            firstName: '',
+            name: '',
             lastName: '',
             email: '',
             phone: '',
@@ -151,7 +151,7 @@ export default function NewGuidePage() {
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/guides">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Guides
+                                {/* Back to Guides */}
                             </Link>
                         </Button>
                         <div>
@@ -176,20 +176,20 @@ export default function NewGuidePage() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="firstName">First Name *</Label>
-                                            <Input
-                                                id="firstName"
-                                                {...form.register('firstName')}
-                                            />
-                                            {form.formState.errors.firstName && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.firstName.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="space-y-2">
+                                    {/* <div className="grid gap-4 md:grid-cols-2"> */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Name *</Label>
+                                        <Input
+                                            id="name"
+                                            {...form.register('name')}
+                                        />
+                                        {form.formState.errors.name && (
+                                            <p className="text-sm text-red-500">
+                                                {form.formState.errors.name.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {/* <div className="space-y-2">
                                             <Label htmlFor="lastName">Last Name *</Label>
                                             <Input
                                                 id="lastName"
@@ -200,8 +200,8 @@ export default function NewGuidePage() {
                                                     {form.formState.errors.lastName.message}
                                                 </p>
                                             )}
-                                        </div>
-                                    </div>
+                                        </div> */}
+                                    {/* </div> */}
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="space-y-2">

@@ -37,6 +37,7 @@ export default function BookingDetailPage() {
   //   queryFn: () => bookingsApi.getBooking(bookingId),
   //   initialData: mockBooking,
   // });
+
   const booking = mockBooking;
 
   if (isLoading) {
@@ -67,7 +68,7 @@ export default function BookingDetailPage() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/bookings">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Bookings
+                {/* Back to Bookings */}
               </Link>
             </Button>
             <div>

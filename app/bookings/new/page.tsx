@@ -32,22 +32,16 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 const bookingSchema = z.object({
-    packageId: z.string().min(1, 'Package is required'),
-    guideId: z.string().optional(),
-    customer: z.object({
-        firstName: z.string().min(1, 'First name is required'),
-        lastName: z.string().min(1, 'Last name is required'),
-        email: z.string().email('Invalid email address'),
-        phone: z.string().min(1, 'Phone number is required'),
-        nationality: z.string().min(1, 'Nationality is required'),
-    }),
-    startDate: z.date(),
-    endDate: z.date(),
-    participants: z.number().min(1, 'At least 1 participant is required'),
-    specialRequests: z.string().optional(),
+    package_id: z.string().min(1, 'Package is required'),
+    guest_name: z.string().min(1, 'Guest name is required'),
+    guest_phone: z.string().min(1, 'Guest phone is required'),
+    guest_email: z.string().email('Invalid email address'),
+    num_guests: z.number().min(1, 'At least 1 guest is required'),
+    tour_date: z.date(),
+    guide_id: z.string().optional(),
     addOns: z.array(z.object({
-        id: z.string(),
-        quantity: z.number().min(1),
+        name: z.string(),
+        price: z.number().min(0),
     })).optional(),
 });
 
@@ -89,46 +83,46 @@ export default function NewBookingPage() {
         }
     };
 
-    const handlePackageChange = (packageId: string) => {
-        const pkg = mockPackages.find(p => p.id === packageId);
+    const handlePackageChange = (package_id: string) => {
+        const pkg = mockPackages.find(p => p.id === package_id);
         setSelectedPackage(pkg);
-        form.setValue('packageId', packageId);
+        form.setValue('package_id', package_id);
 
-        if (pkg) {
-            // Set end date based on package duration
-            const startDate = form.getValues('startDate');
-            if (startDate) {
-                const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + pkg.duration - 1);
-                form.setValue('endDate', endDate);
-            }
-        }
+        // if (pkg) {
+        //     // Set end date based on package duration
+        //     const startDate = form.getValues('tour_date');
+        //     if (startDate) {
+        //         const endDate = new Date(startDate);
+        //         endDate.setDate(endDate.getDate() + pkg.duration - 1);
+        //         form.setValue('endDate', endDate);
+        //     }
+        // }
     };
 
     const handleStartDateChange = (date: Date | undefined) => {
         if (date) {
-            form.setValue('startDate', date);
+            form.setValue('tour_date', date);
 
-            // Update end date if package is selected
-            if (selectedPackage) {
-                const endDate = new Date(date);
-                endDate.setDate(endDate.getDate() + selectedPackage.duration - 1);
-                form.setValue('endDate', endDate);
-            }
+            // // Update end date if package is selected
+            // if (selectedPackage) {
+            //     const endDate = new Date(date);
+            //     endDate.setDate(endDate.getDate() + selectedPackage.duration - 1);
+            //     form.setValue('endDate', endDate);
+            // }
         }
     };
 
-    const addAddOn = (addOnId: string) => {
-        const existing = addOns.find(a => a.id === addOnId);
-        if (existing) {
-            setAddOns(addOns.map(a =>
-                a.id === addOnId ? { ...a, quantity: a.quantity + 1 } : a
-            ));
-        } else {
-            setAddOns([...addOns, { id: addOnId, quantity: 1 }]);
-        }
-        form.setValue('addOns', addOns);
-    };
+    // const addAddOn = (addOnId: string) => {
+    //     const existing = addOns.find(a => a.id === addOnId);
+    //     if (existing) {
+    //         setAddOns(addOns.map(a =>
+    //             a.id === addOnId ? { ...a, quantity: a.quantity + 1 } : a
+    //         ));
+    //     } else {
+    //         setAddOns([...addOns, { id: addOnId, quantity: 1 }]);
+    //     }
+    //     form.setValue('addOns', addOns);
+    // };
 
     const removeAddOn = (addOnId: string) => {
         const updated = addOns.filter(a => a.id !== addOnId);
@@ -139,7 +133,7 @@ export default function NewBookingPage() {
     const calculateTotal = () => {
         if (!selectedPackage) return 0;
 
-        let total = selectedPackage.price * form.watch('participants');
+        let total = selectedPackage.price // * form.watch('participants');
 
         addOns.forEach(addOn => {
             const packageAddOn = selectedPackage.addOns.find((a: any) => a.id === addOn.id);
@@ -159,7 +153,7 @@ export default function NewBookingPage() {
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/bookings">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Bookings
+                                {/* Back to Bookings */}
                             </Link>
                         </Button>
                         <div>
@@ -185,7 +179,7 @@ export default function NewBookingPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="packageId">Tour Package *</Label>
+                                        <Label htmlFor="package_id">Tour Package *</Label>
                                         <Select onValueChange={handlePackageChange}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select a package" />
@@ -203,16 +197,16 @@ export default function NewBookingPage() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        {form.formState.errors.packageId && (
+                                        {form.formState.errors.package_id && (
                                             <p className="text-sm text-red-500">
-                                                {form.formState.errors.packageId.message}
+                                                {form.formState.errors.package_id.message}
                                             </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="guideId">Tour Guide (Optional)</Label>
-                                        <Select onValueChange={(value) => form.setValue('guideId', value)}>
+                                        <Label htmlFor="guide_id">Tour Guide (Optional)</Label>
+                                        <Select onValueChange={(value) => form.setValue('guide_id', value)}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select a guide" />
                                             </SelectTrigger>
@@ -242,72 +236,45 @@ export default function NewBookingPage() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="firstName">First Name *</Label>
-                                            <Input
-                                                id="firstName"
-                                                {...form.register('customer.firstName')}
-                                            />
-                                            {form.formState.errors.customer?.firstName && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.customer.firstName.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="lastName">Last Name *</Label>
-                                            <Input
-                                                id="lastName"
-                                                {...form.register('customer.lastName')}
-                                            />
-                                            {form.formState.errors.customer?.lastName && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.customer.lastName.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="email">Email Address *</Label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                {...form.register('customer.email')}
-                                            />
-                                            {form.formState.errors.customer?.email && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.customer.email.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="phone">Phone Number *</Label>
-                                            <Input
-                                                id="phone"
-                                                {...form.register('customer.phone')}
-                                            />
-                                            {form.formState.errors.customer?.phone && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.customer.phone.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
                                     <div className="space-y-2">
-                                        <Label htmlFor="nationality">Nationality *</Label>
+                                        <Label htmlFor="guest_name">Guest Name *</Label>
                                         <Input
-                                            id="nationality"
-                                            {...form.register('customer.nationality')}
+                                            id="guest_name"
+                                            {...form.register('guest_name')}
                                         />
-                                        {form.formState.errors.customer?.nationality && (
+                                        {form.formState.errors.guest_name && (
                                             <p className="text-sm text-red-500">
-                                                {form.formState.errors.customer.nationality.message}
+                                                {form.formState.errors.guest_name.message}
                                             </p>
                                         )}
+                                    </div>
+
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="guest_email">Email Address *</Label>
+                                            <Input
+                                                id="guest_email"
+                                                type="email"
+                                                {...form.register('guest_email')}
+                                            />
+                                            {form.formState.errors.guest_email && (
+                                                <p className="text-sm text-red-500">
+                                                    {form.formState.errors.guest_email.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="guest_phone">Phone Number *</Label>
+                                            <Input
+                                                id="guest_phone"
+                                                {...form.register('guest_phone')}
+                                            />
+                                            {form.formState.errors.guest_phone && (
+                                                <p className="text-sm text-red-500">
+                                                    {form.formState.errors.guest_phone.message}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -330,12 +297,12 @@ export default function NewBookingPage() {
                                                         variant="outline"
                                                         className={cn(
                                                             'w-full justify-start text-left font-normal',
-                                                            !form.watch('startDate') && 'text-muted-foreground'
+                                                            !form.watch('tour_date') && 'text-muted-foreground'
                                                         )}
                                                     >
                                                         <Calendar className="mr-2 h-4 w-4" />
-                                                        {form.watch('startDate') ? (
-                                                            format(form.watch('startDate'), 'PPP')
+                                                        {form.watch('tour_date') ? (
+                                                            format(form.watch('tour_date'), 'PPP')
                                                         ) : (
                                                             <span>Pick a date</span>
                                                         )}
@@ -344,83 +311,24 @@ export default function NewBookingPage() {
                                                 <PopoverContent className="w-auto p-0">
                                                     <CalendarComponent
                                                         mode="single"
-                                                        selected={form.watch('startDate')}
+                                                        selected={form.watch('tour_date')}
                                                         onSelect={handleStartDateChange}
                                                         initialFocus
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            {form.formState.errors.startDate && (
+                                            {form.formState.errors.tour_date && (
                                                 <p className="text-sm text-red-500">
-                                                    {form.formState.errors.startDate.message}
+                                                    {form.formState.errors.tour_date.message}
                                                 </p>
                                             )}
                                         </div>
-
-                                        <div className="space-y-2">
-                                            <Label>End Date *</Label>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        className={cn(
-                                                            'w-full justify-start text-left font-normal',
-                                                            !form.watch('endDate') && 'text-muted-foreground'
-                                                        )}
-                                                    >
-                                                        <Calendar className="mr-2 h-4 w-4" />
-                                                        {form.watch('endDate') ? (
-                                                            format(form.watch('endDate'), 'PPP')
-                                                        ) : (
-                                                            <span>Pick a date</span>
-                                                        )}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0">
-                                                    <CalendarComponent
-                                                        mode="single"
-                                                        selected={form.watch('endDate')}
-                                                        onSelect={(date) => date && form.setValue('endDate', date)}
-                                                        initialFocus
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                            {form.formState.errors.endDate && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.endDate.message}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="participants">Participants *</Label>
-                                            <Input
-                                                id="participants"
-                                                type="number"
-                                                min="1"
-                                                {...form.register('participants', { valueAsNumber: true })}
-                                            />
-                                            {form.formState.errors.participants && (
-                                                <p className="text-sm text-red-500">
-                                                    {form.formState.errors.participants.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="specialRequests">Special Requests</Label>
-                                        <Textarea
-                                            id="specialRequests"
-                                            placeholder="Any special requirements or requests..."
-                                            {...form.register('specialRequests')}
-                                        />
                                     </div>
                                 </CardContent>
                             </Card>
 
                             {/* Add-ons */}
-                            {selectedPackage && selectedPackage.addOns.length > 0 && (
+                            {/* {selectedPackage && selectedPackage.addOns.length > 0 && (
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Add-ons</CardTitle>
@@ -467,7 +375,7 @@ export default function NewBookingPage() {
                                         })}
                                     </CardContent>
                                 </Card>
-                            )}
+                            )} */}
                         </div>
 
                         {/* Summary Sidebar */}
@@ -484,9 +392,6 @@ export default function NewBookingPage() {
                                         <>
                                             <div className="space-y-2">
                                                 <h4 className="font-medium">{selectedPackage.name}</h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {selectedPackage.duration} days • {form.watch('participants')} participants
-                                                </p>
                                             </div>
 
                                             <Separator />
@@ -496,13 +401,10 @@ export default function NewBookingPage() {
                                                     <span>Package price:</span>
                                                     <span>GHS {selectedPackage.price.toLocaleString()}</span>
                                                 </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span>Participants:</span>
-                                                    <span>× {form.watch('participants')}</span>
-                                                </div>
+
                                                 <div className="flex justify-between text-sm">
                                                     <span>Subtotal:</span>
-                                                    <span>GHS {(selectedPackage.price * form.watch('participants')).toLocaleString()}</span>
+                                                    <span>GHS {(selectedPackage.price).toLocaleString()}</span>
                                                 </div>
 
                                                 {addOns.map(addOn => {
@@ -510,7 +412,7 @@ export default function NewBookingPage() {
                                                     if (!packageAddOn) return null;
                                                     return (
                                                         <div key={addOn.id} className="flex justify-between text-sm text-muted-foreground">
-                                                            <span>{packageAddOn.name} (×{addOn.quantity}):</span>
+                                                            <span>{packageAddOn.name} (x{addOn.quantity}):</span>
                                                             <span>GHS {(packageAddOn.price * addOn.quantity).toLocaleString()}</span>
                                                         </div>
                                                     );

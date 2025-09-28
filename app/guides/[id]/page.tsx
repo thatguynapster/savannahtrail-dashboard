@@ -92,7 +92,7 @@ export default function GuideDetailPage() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/guides">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Guides
+                {/* Back to Guides */}
               </Link>
             </Button>
             <div>

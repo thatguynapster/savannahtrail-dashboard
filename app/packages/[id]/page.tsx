@@ -1,55 +1,39 @@
-'use client';
-
-import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
-import { MainLayout } from '@/components/layout/main-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { hasPermission } from '@/lib/permissions';
-import { format } from 'date-fns';
 import {
   ArrowLeft,
   Edit,
   Trash2,
-  Star,
   Clock,
   Users,
-  MapPin,
   Calendar,
   DollarSign,
   Image as ImageIcon,
   Plus,
-  CheckCircle,
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { DetailSkeleton } from '@/components/loading/detail-skeleton';
-import { mockPackages, mockUsers } from "@/data/dummy";
-import { useState } from "react";
 
-export default function PackageDetailPage() {
-  const params = useParams();
-  const packageId = params.id as string;
-  const [isLoading, setIsLoading] = useState(false);
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MainLayout } from '@/components/layout/main-layout';
+import { hasPermission } from '@/lib/permissions';
+import { packagesApi } from "@/lib/api/packages";
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { parseCurrency } from "@/lib/utils";
+import { mockUsers } from "@/data/dummy";
+
+interface Props { params: { id: string } };
+
+export default async function PackageDetailPage({ params: { id } }: Props) {
+
   // const { user } = useAuth();
   const user = mockUsers[0];
 
-  // const { data: pkg, isLoading } = useQuery({
-  //   queryKey: ['package', packageId],
-  //   queryFn: () => packagesApi.getPackage(packageId),
-  // });
-  const pkg = mockPackages.find(p => p.id === packageId);
 
-  if (isLoading) {
-    return (
-      <MainLayout>
-        <DetailSkeleton />
-      </MainLayout>
-    );
-  }
+  const { responses: pkg } = await packagesApi.getPackage(id);
+  console.log('package:', pkg);
+
 
   if (!pkg) {
     return (
@@ -58,7 +42,10 @@ export default function PackageDetailPage() {
           <h2 className="text-2xl font-bold">Package not found</h2>
           <p className="text-muted-foreground mt-2">The package you're looking for doesn't exist.</p>
           <Button asChild className="mt-4">
-            <Link href="/packages">Back to Packages</Link>
+            <Link href="/packages">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {/* Back to Packages */}
+            </Link>
           </Button>
         </div>
       </MainLayout>
@@ -74,16 +61,6 @@ export default function PackageDetailPage() {
     return colors[status as keyof typeof colors] || colors.draft;
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    const colors = {
-      easy: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
-      moderate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
-      challenging: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
-      extreme: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
-    };
-    return colors[difficulty as keyof typeof colors] || colors.easy;
-  };
-
   const canEdit = hasPermission(user?.role || 'support', 'edit_packages');
   const canDelete = hasPermission(user?.role || 'support', 'delete_packages');
 
@@ -95,23 +72,22 @@ export default function PackageDetailPage() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/packages">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Packages
+                {/* Back to Packages */}
               </Link>
             </Button>
             <div>
               <div className="flex items-center space-x-3">
-                <h1 className="text-3xl font-bold">{pkg.name}</h1>
-                {pkg.isPopular && <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />}
+                <h1 className="text-3xl font-bold">{pkg.title}</h1>
               </div>
               <p className="text-muted-foreground">
-                Created on {format(new Date(pkg.createdAt), 'MMM dd, yyyy')}
+                {/* Created on {format(new Date(pkg.created_at), 'dd MMM, yyyy')} */}
               </p>
             </div>
           </div>
           <div className="flex space-x-2">
             {canEdit && (
               <Button variant="outline" asChild>
-                <Link href={`/packages/${pkg.id}/edit`}>
+                <Link href={`/packages/${pkg._id}/edit`}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Package
                 </Link>
@@ -134,10 +110,7 @@ export default function PackageDetailPage() {
                 <CardTitle>Package Overview</CardTitle>
                 <div className="flex space-x-2">
                   <Badge className={getStatusColor(pkg.status)}>
-                    {pkg.status.charAt(0).toUpperCase() + pkg.status.slice(1)}
-                  </Badge>
-                  <Badge className={getDifficultyColor(pkg.difficulty)}>
-                    {pkg.difficulty.charAt(0).toUpperCase() + pkg.difficulty.slice(1)}
+                    {/* {pkg.status.charAt(0).toUpperCase() + pkg.status.slice(1)} */}
                   </Badge>
                 </div>
               </div>
@@ -155,29 +128,17 @@ export default function PackageDetailPage() {
                   <div className="flex items-center space-x-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">Price:</span>
-                    <span className="text-sm">GHS {pkg.price.toLocaleString()}</span>
+                    <span className="text-sm">{parseCurrency(pkg.base_price)}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">Duration:</span>
-                    <span className="text-sm">{pkg.duration} days</span>
+                    <span className="text-sm">{pkg.duration_hours} days</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">Capacity:</span>
-                    <span className="text-sm">{pkg.minParticipants}-{pkg.maxParticipants} people</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Location:</span>
-                    <span className="text-sm">{pkg.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Meeting Point:</span>
-                    <span className="text-sm">{pkg.meetingPoint}</span>
+                    <span className="text-sm">{pkg.guest_limit} people</span>
                   </div>
                 </div>
               </div>
@@ -193,10 +154,10 @@ export default function PackageDetailPage() {
                   <span className="text-sm font-medium">Available Dates</span>
                 </div>
                 <div className="text-2xl font-bold mt-2">
-                  {pkg.availableDates.length}
+                  {pkg.available_dates?.length}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Next: {pkg.availableDates[0] ? format(new Date(pkg.availableDates[0]), 'MMM dd') : 'None'}
+                  {/* Next: {pkg.available_dates[0] ? format(new Date(pkg.available_dates[0]), 'dd MMM') : 'None'} */}
                 </p>
               </CardContent>
             </Card>
@@ -208,10 +169,10 @@ export default function PackageDetailPage() {
                   <span className="text-sm font-medium">Images</span>
                 </div>
                 <div className="text-2xl font-bold mt-2">
-                  {pkg.images.length}
+                  {pkg.images?.length}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {pkg.images.filter(img => img.isPrimary).length} primary
+                  {/* {pkg.images.filter(img => img.isPrimary).length} primary */}
                 </p>
               </CardContent>
             </Card>
@@ -223,10 +184,10 @@ export default function PackageDetailPage() {
                   <span className="text-sm font-medium">Add-ons</span>
                 </div>
                 <div className="text-2xl font-bold mt-2">
-                  {pkg.addOns.length}
+                  {pkg.addons?.length}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {pkg.addOns.filter(addon => addon.isRequired).length} required
+                  {pkg.addons?.map(addon => addon.name)}
                 </p>
               </CardContent>
             </Card>
@@ -234,17 +195,17 @@ export default function PackageDetailPage() {
         </div>
 
         {/* Detailed Information Tabs */}
-        <Tabs defaultValue="itinerary" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
-            <TabsTrigger value="inclusions">Inclusions</TabsTrigger>
+        <Tabs defaultValue="images" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3">
+            {/* <TabsTrigger value="itinerary">Itinerary</TabsTrigger> */}
+            {/* <TabsTrigger value="inclusions">Inclusions</TabsTrigger> */}
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="addons">Add-ons</TabsTrigger>
             <TabsTrigger value="availability">Availability</TabsTrigger>
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
+            {/* <TabsTrigger value="requirements">Requirements</TabsTrigger> */}
           </TabsList>
 
-          <TabsContent value="itinerary">
+          {/* <TabsContent value="itinerary">
             <Card>
               <CardHeader>
                 <CardTitle>Tour Itinerary</CardTitle>
@@ -278,9 +239,9 @@ export default function PackageDetailPage() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
-          <TabsContent value="inclusions">
+          {/* <TabsContent value="inclusions">
             <div className="grid gap-6 md:grid-cols-2">
               <Card>
                 <CardHeader>
@@ -320,7 +281,7 @@ export default function PackageDetailPage() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="images">
             <Card>
@@ -339,7 +300,7 @@ export default function PackageDetailPage() {
                 )}
               </CardHeader>
               <CardContent>
-                {pkg.images.length === 0 ? (
+                {pkg.images?.length === 0 ? (
                   <div className="text-center py-12 border-2 border-dashed border-muted rounded-lg">
                     <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-medium mb-2">No images uploaded</h3>
@@ -355,20 +316,15 @@ export default function PackageDetailPage() {
                   </div>
                 ) : (
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {pkg.images.map((image) => (
-                      <div key={image.id} className="relative group">
+                    {pkg.images?.map((image, idx) => (
+                      <div key={image} className="relative group">
                         <div className="aspect-video relative overflow-hidden rounded-lg border">
                           <Image
-                            src={image.url}
-                            alt={image.alt}
+                            src={image}
+                            alt={`Package Image ${idx + 1}`}
                             fill
                             className="object-cover transition-transform group-hover:scale-105"
                           />
-                          {image.isPrimary && (
-                            <Badge className="absolute top-2 left-2 bg-orange-500">
-                              Primary
-                            </Badge>
-                          )}
                         </div>
                         {canEdit && (
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center space-x-2">
@@ -380,9 +336,6 @@ export default function PackageDetailPage() {
                             </Button>
                           </div>
                         )}
-                        <p className="text-xs text-muted-foreground mt-2 truncate">
-                          {image.alt}
-                        </p>
                       </div>
                     ))}
                   </div>
@@ -408,7 +361,7 @@ export default function PackageDetailPage() {
                 )}
               </CardHeader>
               <CardContent>
-                {pkg.addOns.length === 0 ? (
+                {pkg.addons?.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">No add-ons configured</p>
                     {canEdit && (
@@ -420,19 +373,19 @@ export default function PackageDetailPage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {pkg.addOns.map((addon) => (
-                      <div key={addon.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    {pkg.addons?.map((addon) => (
+                      <div key={addon.name} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="space-y-1">
                           <div className="flex items-center space-x-2">
                             <h4 className="font-medium">{addon.name}</h4>
-                            {addon.isRequired && (
+                            {/* {addon.isRequired && (
                               <Badge variant="destructive" className="text-xs">
                                 Required
                               </Badge>
-                            )}
+                            )} */}
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {addon.description}
+                            {parseCurrency(addon.price)}
                           </p>
                         </div>
                         <div className="text-right">
@@ -476,15 +429,15 @@ export default function PackageDetailPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <h4 className="font-semibold mb-3 text-green-700 dark:text-green-400">
-                      Available Dates ({pkg.availableDates.length})
+                      Available Dates ({pkg.available_dates?.length})
                     </h4>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {pkg.availableDates.length === 0 ? (
+                      {pkg.available_dates?.length === 0 ? (
                         <p className="text-sm text-muted-foreground">No available dates set</p>
                       ) : (
-                        pkg.availableDates.map((date) => (
-                          <div key={date} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                            <span className="text-sm">{format(new Date(date), 'MMM dd, yyyy')}</span>
+                        pkg.available_dates?.map((date) => (
+                          <div key={date.toISOString()} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                            {/* <span className="text-sm">{format(new Date(date), 'MMM dd, yyyy')}</span> */}
                             {canEdit && (
                               <Button size="sm" variant="ghost">
                                 <XCircle className="h-3 w-3" />
@@ -496,7 +449,7 @@ export default function PackageDetailPage() {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <h4 className="font-semibold mb-3 text-red-700 dark:text-red-400">
                       Blocked Dates ({pkg.unavailableDates.length})
                     </h4>
@@ -516,13 +469,13 @@ export default function PackageDetailPage() {
                         ))
                       )}
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="requirements">
+          {/* <TabsContent value="requirements">
             <Card>
               <CardHeader>
                 <CardTitle>Package Requirements</CardTitle>
@@ -545,7 +498,7 @@ export default function PackageDetailPage() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </MainLayout>
