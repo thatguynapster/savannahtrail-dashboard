@@ -12,6 +12,8 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { authApi } from "@/lib/api/auth";
+import { loginUser } from "@/lib/actions/auth";
 
 const loginSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -37,7 +39,19 @@ export function LoginForm() {
     const onSubmit = async (data: LoginFormData) => {
         try {
             setError(null);
-            // await login(data.email, data.password);
+            const login = await loginUser(JSON.stringify(data));
+            // save user to local storage
+            localStorage.setItem('__u', JSON.stringify({
+                email: login.response.user.email,
+                id: login.response.user.id,
+                name: login.response.user.name,
+                permissions: login.response.user.permissions,
+                role: login.response.user.role,
+            }
+            ));
+            // save token to local storage
+            localStorage.setItem('__t', login.response.token);
+            // redirect to dashboard
             router.push('/dashboard')
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Login failed');

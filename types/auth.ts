@@ -23,9 +23,33 @@ export interface LoginRequest {
 	password: string;
 }
 
+export interface RegisterRequest {
+	email: string;
+	password: string;
+	name: string;
+	role: string;
+}
+
 export interface LoginResponse {
-	user: User;
+	user: {
+		id: string;
+		email: string;
+		name: string;
+		role: string;
+		permissions: [];
+		created_at: Date;
+	};
 	token: string;
+	expires_at: Date;
+}
+
+export interface RegisterResponse {
+	id: string;
+	email: string;
+	name: string;
+	role: string;
+	permissions: string[];
+	created_at: Date;
 }
 
 export interface ResetPasswordRequest {
