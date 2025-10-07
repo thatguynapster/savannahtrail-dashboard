@@ -43,6 +43,7 @@ export interface PackageCreateRequest {
 	guest_limit: number;
 	extra_guest_fee?: number;
 	duration_hours: number;
+	images: string[];
 	addons: PackageAddOn[];
 }
 

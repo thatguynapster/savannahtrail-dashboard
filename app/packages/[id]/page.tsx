@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { parseCurrency } from "@/lib/utils";
 import { mockUsers } from "@/data/dummy";
+import { format } from "date-fns";
 
 interface Props { params: { id: string } };
 
@@ -328,9 +329,6 @@ export default async function PackageDetailPage({ params: { id } }: Props) {
                         </div>
                         {canEdit && (
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center space-x-2">
-                            <Button size="sm" variant="secondary">
-                              <Edit className="h-3 w-3" />
-                            </Button>
                             <Button size="sm" variant="destructive">
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -436,8 +434,8 @@ export default async function PackageDetailPage({ params: { id } }: Props) {
                         <p className="text-sm text-muted-foreground">No available dates set</p>
                       ) : (
                         pkg.available_dates?.map((date) => (
-                          <div key={date.toISOString()} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                            {/* <span className="text-sm">{format(new Date(date), 'MMM dd, yyyy')}</span> */}
+                          <div key={new Date(date).toISOString()} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                            <span className="text-sm">{format(new Date(date), 'MMM dd, yyyy')}</span>
                             {canEdit && (
                               <Button size="sm" variant="ghost">
                                 <XCircle className="h-3 w-3" />
