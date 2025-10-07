@@ -51,7 +51,13 @@ export function Header() {
   };
 
   const logout = () => {
-    router.push('/auth/login');
+    // clear session storage
+    sessionStorage.clear();
+
+    // clear local storage
+    localStorage.clear();
+
+    router.push('/');
   };
 
 
