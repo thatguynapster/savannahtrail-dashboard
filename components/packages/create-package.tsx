@@ -8,26 +8,29 @@ import {
     Plus,
     Trash2,
     Images as ImagesIcon,
+    ChevronUp,
 } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from "react";
 import { toast } from 'sonner';
-import { string, z } from 'zod';
+import { z } from 'zod';
 
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { createTourPackage, updateTourPackage } from "@/lib/actions/packages";
-import ImageUpload from "@/components/ui/image-upload";
+import { createTourPackage, deleteTourPackage, updateTourPackage } from "@/lib/actions/packages";
+import { Package, PackageStatus } from "@/types/package";
 import { Separator } from '@/components/ui/separator';
+import { useModal } from "@/providers/modal-provider";
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import ConfirmModal from "../ui/confirm-modal";
 import { Input } from '@/components/ui/input';
-import { Package } from "@/types/package";
-import { makeSlug } from "@/lib/utils";
-import { routes } from "@/app/routes"; ``
 import * as Images from "@/components/images";
+import { makeSlug } from "@/lib/utils";
+import { routes } from "@/app/routes";
 
 // Schema based on OpenAPI CreatePackageRequest
 const packageSchema = z.object({
@@ -48,7 +51,7 @@ const packageSchema = z.object({
 type PackageFormData = z.infer<typeof packageSchema>;
 
 const CreatePackage = ({ data: packageData }: { data?: Package }) => {
-
+    const { setOpen, setClose } = useModal();
     const router = useRouter();
 
     const form = useForm<PackageFormData>({
@@ -78,8 +81,6 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
 
     const onSubmit = async (data: PackageFormData) => {
         try {
-            console.log('package data:', packageData)
-            console.log('form data:', data)
             const formdata = new FormData();
 
             // upload only File objects
@@ -101,18 +102,6 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
                     .then((resp) => resp.json())
                     .then((res) => res.responses.map((img: any) => img.url))
                     .catch((error) => toast.error(error))
-
-                console.log('uploadedImages:', uploadedImages);
-
-                console.log(
-                    form.getValues('images'),
-                    {
-                        ...data, images: [
-                            ...(form.getValues('images') || []),
-                            ...uploadedImages
-                        ]
-                    }
-                )
 
                 if (packageData) {
                     const updateData = {
@@ -140,7 +129,6 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
                 toast.success('Package created successfully');
                 router.push(routes.packages.index);
             } catch (error) {
-                console.log(error)
                 toast.error('Image upload failed');
             }
         } catch (error) {
@@ -149,7 +137,26 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
     };
 
     const handleDelete = async () => {
-        console.log('Delete package:', packageData?._id);
+        try {
+            await deleteTourPackage(packageData?._id || '');
+            toast.success('Package deleted successfully');
+            router.push(routes.packages.index);
+        } catch (error) {
+            toast.error('Failed to delete package');
+        } finally {
+            setClose();
+        }
+    }
+
+    const handleStatusUpdate = async (status: PackageStatus) => {
+        try {
+            await updateTourPackage(JSON.stringify({ _id: packageData?._id, status }));
+            toast.success(`Package marked as ${status}`);
+        } catch (error) {
+            toast.error('Failed to delete package');
+        } finally {
+            setClose();
+        }
     }
 
     const addNewAddon = () => {
@@ -158,6 +165,8 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
             price: 0,
         });
     };
+
+    const statuses: PackageStatus[] = ['active', 'inactive', 'draft'];
 
     return (
         <Form {...form}>
@@ -524,29 +533,56 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
                                         setNewImages(prev => [...prev, ...files]);
                                     }}
                                 />
-
-                                {/* <ImageUpload
-                                    multiple
-                                    existingImages={images}
-                                    onImagesChange={(images) => {
-                                        console.log(images)
-                                        // form.setValue('images', images.existing, { shouldValidate: true })
-                                        setNewImages(images.filter(file => typeof file !== 'string'))
-                                    }}
-                                /> */}
                             </CardContent>
                         </Card>
 
                     </div>
                 </div>
                 <div className="flex w-full space-x-6 justify-between items-center">
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={handleDelete}
-                    >
-                        Delete Package
-                    </Button>
+                    <div className="flex space-x-2">
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={() => setOpen(
+                                <ConfirmModal
+                                    cancel={{ text: 'No, Keep it' }}
+                                    confirm={{
+                                        variant: 'error',
+                                        text: 'Yes, Delete',
+                                        action: handleDelete
+                                    }}
+                                    confirmText={
+                                        <>
+                                            Are you sure you want to delete the package {packageData?.title}?
+                                            <br />
+                                            This action cannot be undone.
+                                        </>
+                                    }
+                                />)}
+                        >
+                            Delete Package
+                        </Button>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="ml-auto">
+                                    Status <ChevronUp className="ml-2 h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {statuses.map((status: PackageStatus) =>
+                                    packageData?.status !== status &&
+                                    <DropdownMenuItem
+                                        key={status}
+                                        className="capitalize"
+                                        onClick={() => { handleStatusUpdate(status) }}
+                                    >
+                                        {status}
+                                    </DropdownMenuItem>
+                                )}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
 
                     <div className="flex space-x-2">
                         <Button
@@ -570,7 +606,7 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
                     </div>
                 </div>
             </form>
-        </Form>
+        </Form >
     )
 }
 

@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { useState } from 'react';
 
+import ModalProvider from "@/providers/modal-provider";
+
 export function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(
         () =>
@@ -13,7 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 defaultOptions: {
                     queries: {
                         staleTime: 60 * 1000, // 1 minute
-                        refetchOnWindowFocus: false,
+                        refetchOnWindowFocus: true,
                     },
                 },
             })
@@ -28,7 +30,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 disableTransitionOnChange
             >
                 {/* <AuthProvider> */}
-                {children}
+                <ModalProvider>
+                    {children}
+                </ModalProvider>
                 {/* </AuthProvider> */}
             </ThemeProvider>
             {/* <ReactQueryDevtools initialIsOpen={false} /> */}

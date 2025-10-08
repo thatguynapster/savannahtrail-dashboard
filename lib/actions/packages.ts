@@ -43,3 +43,14 @@ export const updateTourPackage = async (data: string) => {
 		revalidatePath(routes.packages.index, "page");
 	}
 };
+
+export const deleteTourPackage = async (id: string) => {
+	try {
+		return await packagesApi.deletePackage(id);
+	} catch (error) {
+		console.log("Error deleting package:", error);
+		throw error;
+	} finally {
+		revalidatePath(routes.packages.index, "page");
+	}
+};
