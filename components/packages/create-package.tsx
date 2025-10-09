@@ -540,48 +540,53 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
                 </div>
                 <div className="flex w-full space-x-6 justify-between items-center">
                     <div className="flex space-x-2">
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={() => setOpen(
-                                <ConfirmModal
-                                    cancel={{ text: 'No, Keep it' }}
-                                    confirm={{
-                                        variant: 'error',
-                                        text: 'Yes, Delete',
-                                        action: handleDelete
-                                    }}
-                                    confirmText={
-                                        <>
-                                            Are you sure you want to delete the package {packageData?.title}?
-                                            <br />
-                                            This action cannot be undone.
-                                        </>
-                                    }
-                                />)}
-                        >
-                            Delete Package
-                        </Button>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="ml-auto">
-                                    Status <ChevronUp className="ml-2 h-4 w-4" />
+                        {packageData &&
+                            <>
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={() => setOpen(
+                                        <ConfirmModal
+                                            cancel={{ text: 'No, Keep it' }}
+                                            confirm={{
+                                                variant: 'error',
+                                                text: 'Yes, Delete',
+                                                action: handleDelete
+                                            }}
+                                            confirmText={
+                                                <>
+                                                    Are you sure you want to delete the package {packageData?.title}?
+                                                    <br />
+                                                    This action cannot be undone.
+                                                </>
+                                            }
+                                        />)}
+                                >
+                                    Delete Package
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {statuses.map((status: PackageStatus) =>
-                                    packageData?.status !== status &&
-                                    <DropdownMenuItem
-                                        key={status}
-                                        className="capitalize"
-                                        onClick={() => { handleStatusUpdate(status) }}
-                                    >
-                                        {status}
-                                    </DropdownMenuItem>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="ml-auto">
+                                            Status <ChevronUp className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        {statuses.map((status: PackageStatus) =>
+                                            packageData?.status !== status &&
+                                            <DropdownMenuItem
+                                                key={status}
+                                                className="capitalize"
+                                                onClick={() => { handleStatusUpdate(status) }}
+                                            >
+                                                {status}
+                                            </DropdownMenuItem>
+                                        )}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </>
+                        }
+
                     </div>
 
                     <div className="flex space-x-2">

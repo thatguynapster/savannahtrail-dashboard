@@ -6,9 +6,7 @@ import { MainLayout } from '@/components/layout/main-layout';
 import PackagesTable from "@/components/packages/table";
 import { packagesApi } from "@/lib/api/packages";
 import { Button } from '@/components/ui/button';
-
-
-
+import { routes } from "../routes";
 
 interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -19,7 +17,6 @@ export default async function PackagesPage({ searchParams }: Props) {
   const limit = 10;
 
   const { responses: { docs: packages, total, pages } } = await packagesApi.getPackages(+page, limit);
-  console.log('packages:', packages);
 
   return (
     <MainLayout>
@@ -32,7 +29,7 @@ export default async function PackagesPage({ searchParams }: Props) {
             </p>
           </div>
           <Button asChild>
-            <Link href="/packages/new">
+            <Link href={routes.packages.new}>
               <Plus className="mr-2 h-4 w-4" />
               New Package
             </Link>

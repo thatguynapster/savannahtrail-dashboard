@@ -10,19 +10,21 @@ import {
   Plus,
   XCircle,
 } from 'lucide-react';
-import Link from 'next/link';
+import { format } from "date-fns";
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MainLayout } from '@/components/layout/main-layout';
+import BackButton from "@/components/ui/back-button";
 import { hasPermission } from '@/lib/permissions';
 import { packagesApi } from "@/lib/api/packages";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { parseCurrency } from "@/lib/utils";
 import { mockUsers } from "@/data/dummy";
-import { format } from "date-fns";
+import { routes } from "@/app/routes";
 
 interface Props { params: { id: string } };
 
@@ -70,18 +72,13 @@ export default async function PackageDetailPage({ params: { id } }: Props) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/packages">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                {/* Back to Packages */}
-              </Link>
-            </Button>
+            <BackButton link={routes.packages.index} />
             <div>
               <div className="flex items-center space-x-3">
                 <h1 className="text-3xl font-bold">{pkg.title}</h1>
               </div>
-              <p className="text-muted-foreground">
-                {/* Created on {format(new Date(pkg.created_at), 'dd MMM, yyyy')} */}
+              <p className="text-sm text-muted-foreground">
+                Created on {format(pkg.created_at, 'dd MMM, yyyy')}
               </p>
             </div>
           </div>
@@ -111,7 +108,7 @@ export default async function PackageDetailPage({ params: { id } }: Props) {
                 <CardTitle>Package Overview</CardTitle>
                 <div className="flex space-x-2">
                   <Badge className={getStatusColor(pkg.status)}>
-                    {/* {pkg.status.charAt(0).toUpperCase() + pkg.status.slice(1)} */}
+                    {pkg.status.charAt(0).toUpperCase() + pkg.status.slice(1)}
                   </Badge>
                 </div>
               </div>
