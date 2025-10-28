@@ -1,7 +1,8 @@
+import queryString from "query-string";
+
+import { Package, PackageCreateRequest, PackageFilters } from "@/types/package";
 import { APIResponse } from "@/types/api";
 import { apiClient } from "./client";
-import { Package, PackageCreateRequest, PackageFilters } from "@/types/package";
-import queryString from "query-string";
 
 export interface PackagesResponse {
 	packages: Package[];

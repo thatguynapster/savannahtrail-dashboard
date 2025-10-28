@@ -3,23 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { packagesApi } from "../api/packages";
 import { routes } from "@/app/routes";
+import { guidesApi } from "../api/guides";
 
-export const createTourPackage = async (data: string) => {
+export const createGuide = async (data: string) => {
 	try {
 		const dataObj = JSON.parse(data);
 
-		const tourPackage = await packagesApi.createPackage(dataObj);
+		const guide = await guidesApi.createGuide(dataObj);
 
-		return tourPackage;
+		return guide;
 	} catch (error) {
-		console.log("Error creating package:", error);
+		console.log("Error creating guide:", error);
 		throw error;
 	} finally {
-		revalidatePath(routes.packages.index, "page");
+		revalidatePath(routes.guides.index, "page");
 	}
 };
 
-export const updateTourPackage = async (data: string) => {
+export const updateGuide = async (data: string) => {
 	try {
 		const dataObj = JSON.parse(data);
 		const { _id } = dataObj;
@@ -27,7 +28,7 @@ export const updateTourPackage = async (data: string) => {
 		// delete _id from dataObj to avoid redundancy
 		delete dataObj._id;
 
-		return await packagesApi.updatePackage(_id, dataObj);
+		return await guidesApi.updateGuide(_id, dataObj);
 	} catch (error) {
 		console.log("Error creating package:", error);
 		throw error;
@@ -36,9 +37,9 @@ export const updateTourPackage = async (data: string) => {
 	}
 };
 
-export const deleteTourPackage = async (id: string) => {
+export const deleteGuide = async (id: string) => {
 	try {
-		return await packagesApi.deletePackage(id);
+		return await guidesApi.deleteGuide(id);
 	} catch (error) {
 		console.log("Error deleting package:", error);
 		throw error;

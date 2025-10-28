@@ -24,3 +24,32 @@ export function makeSlug(val: string) {
 
 	return newVal.substring(0, 50);
 }
+
+export async function uploadFiles(formData: FormData) {
+	console.log("data to upload:", formData);
+
+	try {
+		const uploadedImages = await fetch(
+			`${process.env["NEXT_PUBLIC_API_BASE_URL"]}/extensions/file/upload-multiple`,
+			{
+				method: "POST",
+				headers: {
+					"Access-Control-Allow-Origin": "*"
+				},
+				body: formData,
+				redirect: "follow"
+			}
+		)
+			.then((resp) => resp.json())
+			.then((res) => res.responses.map((img: any) => img.url))
+			.catch((error) => {
+				console.log("Error uploading files:", error);
+				throw error;
+			});
+
+		return uploadedImages;
+	} catch (error) {
+		console.log("Failed to upload files");
+		throw new Error("Failed to upload files", { cause: error });
+	}
+}

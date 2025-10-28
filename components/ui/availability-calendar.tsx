@@ -1,12 +1,13 @@
 'use client';
 
-import * as React from 'react';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { format, isSameDay } from 'date-fns';
 import { CalendarDays, Check, X } from 'lucide-react';
+import { format, isSameDay } from 'date-fns';
+import * as React from 'react';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/calendar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface AvailabilityDate {
   date: Date;

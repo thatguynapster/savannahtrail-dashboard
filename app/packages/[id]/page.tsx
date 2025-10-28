@@ -45,9 +45,9 @@ export default async function PackageDetailPage({ params: { id } }: Props) {
           <h2 className="text-2xl font-bold">Package not found</h2>
           <p className="text-muted-foreground mt-2">The package you're looking for doesn't exist.</p>
           <Button asChild className="mt-4">
-            <Link href="/packages">
+            <Link href={routes.packages.index}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {/* Back to Packages */}
+              Back to Packages
             </Link>
           </Button>
         </div>

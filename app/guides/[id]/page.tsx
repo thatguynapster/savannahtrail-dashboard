@@ -1,5 +1,3 @@
-'use client';
-
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { MainLayout } from '@/components/layout/main-layout';
@@ -26,33 +24,20 @@ import {
 import Link from 'next/link';
 import { Guide } from "@/types/guide";
 import { DetailSkeleton } from '@/components/loading/detail-skeleton';
-import { mockGuides } from "@/data/dummy";
+import { mockGuides, mockUsers } from "@/data/dummy";
 import { useState } from "react";
+import { guidesApi } from "@/lib/api/guides";
+import { routes } from "@/app/routes";
 
-export default function GuideDetailPage() {
-  const params = useParams();
-  const guideId = params.id as string;
-  const [isLoading, setIsLoading] = useState(false);
-  const guide = mockGuides.find(g => g.id === guideId) as Guide;
+interface Props { params: { id: string } };
 
-  // const { data: guide, isLoading } = useQuery({
-  //   queryKey: ['guide', guideId],
-  //   queryFn: () => guidesApi.getGuide(guideId),
-  // });
+export default async function GuideDetailPage({ params: { id } }: Props) {
 
-  // const { data: availability } = useQuery({
-  //   queryKey: ['guide-availability', guideId],
-  //   queryFn: () => guidesApi.getAvailability(guideId, '2024-02'),
-  //   enabled: !!guide,
-  // });
+  const user = mockUsers[0]
 
-  if (isLoading) {
-    return (
-      <MainLayout>
-        <DetailSkeleton />
-      </MainLayout>
-    );
-  }
+  console.log(id)
+  const { response: guide } = await guidesApi.getGuide(id)
+  console.log('guide', guide)
 
   if (!guide) {
     return (
@@ -61,7 +46,10 @@ export default function GuideDetailPage() {
           <h2 className="text-2xl font-bold">Guide not found</h2>
           <p className="text-muted-foreground mt-2">The guide you're looking for doesn't exist.</p>
           <Button asChild className="mt-4">
-            <Link href="/guides">Back to Guides</Link>
+            <Link href={routes.guides.index}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Guides
+            </Link>
           </Button>
         </div>
       </MainLayout>
@@ -77,12 +65,10 @@ export default function GuideDetailPage() {
     return colors[status as keyof typeof colors] || colors.active;
   };
 
-  const availabilityData = guide.availability.map(a => ({
-    date: new Date(a.date),
-    isAvailable: a.isAvailable,
-    bookingId: a.bookingId,
-    packageName: a.packageName,
-  })) || [];
+  // const availabilityData = guide.availability.map(a => ({
+  //   date: new Date(a.date),
+  //   isAvailable: a.available,
+  // })) || [];
 
   return (
     <MainLayout>
@@ -96,23 +82,23 @@ export default function GuideDetailPage() {
               </Link>
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">{guide.firstName} {guide.lastName}</h1>
+              <h1 className="text-3xl font-bold">{guide.name}</h1>
               <p className="text-muted-foreground">
-                Joined {format(new Date(guide.joinedAt), 'MMM dd, yyyy')}
+                Joined {format(new Date(guide.created_at), 'MMM dd, yyyy')}
               </p>
             </div>
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" asChild>
-              <Link href={`/guides/${guide.id}/edit`}>
+              <Link href={`/guides/${guide._id}/edit`}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Profile
               </Link>
             </Button>
-            <Button variant="outline">
+            {/* <Button variant="outline">
               <UserCheck className="mr-2 h-4 w-4" />
               Update Status
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -121,12 +107,12 @@ export default function GuideDetailPage() {
           <Card className="md:col-span-1">
             <CardHeader className="text-center">
               <Avatar className="w-24 h-24 mx-auto mb-4">
-                <AvatarImage src={guide.avatar} alt={`${guide.firstName} ${guide.lastName}`} />
+                <AvatarImage src={guide.photo_url} alt={`${guide.name}`} />
                 <AvatarFallback className="text-2xl">
-                  {guide.firstName[0]}{guide.lastName[0]}
+                  {guide.name.split(' ')[0][0]}{guide.name.split(' ')[1]?.[0]}
                 </AvatarFallback>
               </Avatar>
-              <CardTitle>{guide.firstName} {guide.lastName}</CardTitle>
+              <CardTitle>{guide.name}</CardTitle>
               <CardDescription>{guide.specialties.join(' • ')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -134,11 +120,11 @@ export default function GuideDetailPage() {
                 <Badge className={getStatusColor(guide.status)}>
                   {guide.status.replace('_', ' ').charAt(0).toUpperCase() + guide.status.replace('_', ' ').slice(1)}
                 </Badge>
-                <div className="flex items-center space-x-1">
+                {/* <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="font-medium">{guide.rating}</span>
                   <span className="text-sm text-muted-foreground">({guide.totalTours} tours)</span>
-                </div>
+                </div> */}
               </div>
 
               <Separator />
@@ -152,10 +138,10 @@ export default function GuideDetailPage() {
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">{guide.phone}</span>
                 </div>
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">{guide.experience} years experience</span>
-                </div>
+                </div> */}
               </div>
 
               <Separator />
@@ -171,7 +157,7 @@ export default function GuideDetailPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <h4 className="font-semibold text-sm">Certifications</h4>
                 <div className="space-y-1">
                   {guide.certifications.map((cert) => (
@@ -181,7 +167,7 @@ export default function GuideDetailPage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 
@@ -211,7 +197,7 @@ export default function GuideDetailPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Emergency Contact</CardTitle>
               </CardHeader>
@@ -231,12 +217,12 @@ export default function GuideDetailPage() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
 
         {/* Availability Calendar */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Availability Calendar</CardTitle>
             <CardDescription>
@@ -246,15 +232,15 @@ export default function GuideDetailPage() {
           <CardContent>
             <AvailabilityCalendar
               availabilityData={availabilityData}
-              onDateSelect={(date, isAvailable) => {
-                console.log('Date selected:', date, 'Available:', isAvailable);
-              }}
-              onSave={(dates) => {
-                console.log('Saving availability:', dates);
-              }}
+            // onDateSelect={(date, isAvailable) => {
+            //   console.log('Date selected:', date, 'Available:', isAvailable);
+            // }}
+            // onSave={(dates) => {
+            //   console.log('Saving availability:', dates);
+            // }}
             />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </MainLayout>
   );

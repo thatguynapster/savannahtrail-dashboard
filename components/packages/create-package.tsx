@@ -69,10 +69,11 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
         },
     });
 
+    const isSubmitting = form.formState.isSubmitting;
+
     // const images = form.watch('images') || []
     const [newImages, setNewImages] = useState<(string | File)[]>(packageData?.images || []);
 
-    const isSubmitting = form.formState.isSubmitting;
 
     const { fields: addonFields, append: appendAddon, remove: removeAddon } = useFieldArray({
         control: form.control,
