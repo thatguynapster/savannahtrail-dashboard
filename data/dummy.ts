@@ -34,200 +34,200 @@ export const mockUsers: User[] = [
 ];
 
 export const mockPackages: Package[] = [
-	{
-		id: "PKG001",
-		name: "Safari Adventure",
-		slug: "safari-adventure",
-		description:
-			"Experience the wild beauty of Ghana with our comprehensive safari tour.",
-		shortDescription: "Wildlife safari with professional guides",
-		price: 600,
-		duration: 3,
-		maxParticipants: 8,
-		minParticipants: 2,
-		difficulty: "moderate",
-		status: "active",
-		images: [],
-		addOns: [],
-		itinerary: [],
-		inclusions: ["Transportation", "Meals", "Guide"],
-		exclusions: ["Personal expenses"],
-		requirements: ["Valid passport"],
-		location: "Mole National Park",
-		meetingPoint: "Tamale Airport",
-		isPopular: true,
-		isFeatured: true,
-		availableDates: [],
-		unavailableDates: [],
-		createdAt: "2024-01-01T00:00:00Z",
-		updatedAt: "2024-01-15T00:00:00Z"
-	},
-	{
-		id: "PKG002",
-		name: "Cultural Heritage Tour",
-		slug: "cultural-heritage-tour",
-		description:
-			"Discover the rich cultural heritage of Ghana through historical sites.",
-		shortDescription: "Historical and cultural exploration",
-		price: 400,
-		duration: 2,
-		maxParticipants: 12,
-		minParticipants: 4,
-		difficulty: "easy",
-		status: "active",
-		images: [],
-		addOns: [],
-		itinerary: [],
-		inclusions: ["Transportation", "Guide", "Entry fees"],
-		exclusions: ["Meals", "Accommodation"],
-		requirements: [],
-		location: "Cape Coast",
-		meetingPoint: "Cape Coast Castle",
-		isPopular: false,
-		isFeatured: false,
-		availableDates: [],
-		unavailableDates: [],
-		createdAt: "2024-01-05T00:00:00Z",
-		updatedAt: "2024-01-10T00:00:00Z"
-	}
+	// {
+	// 	id: "PKG001",
+	// 	name: "Safari Adventure",
+	// 	slug: "safari-adventure",
+	// 	description:
+	// 		"Experience the wild beauty of Ghana with our comprehensive safari tour.",
+	// 	shortDescription: "Wildlife safari with professional guides",
+	// 	price: 600,
+	// 	duration: 3,
+	// 	maxParticipants: 8,
+	// 	minParticipants: 2,
+	// 	difficulty: "moderate",
+	// 	status: "active",
+	// 	images: [],
+	// 	addOns: [],
+	// 	itinerary: [],
+	// 	inclusions: ["Transportation", "Meals", "Guide"],
+	// 	exclusions: ["Personal expenses"],
+	// 	requirements: ["Valid passport"],
+	// 	location: "Mole National Park",
+	// 	meetingPoint: "Tamale Airport",
+	// 	isPopular: true,
+	// 	isFeatured: true,
+	// 	availableDates: [],
+	// 	unavailableDates: [],
+	// 	createdAt: "2024-01-01T00:00:00Z",
+	// 	updatedAt: "2024-01-15T00:00:00Z"
+	// },
+	// {
+	// 	id: "PKG002",
+	// 	name: "Cultural Heritage Tour",
+	// 	slug: "cultural-heritage-tour",
+	// 	description:
+	// 		"Discover the rich cultural heritage of Ghana through historical sites.",
+	// 	shortDescription: "Historical and cultural exploration",
+	// 	price: 400,
+	// 	duration: 2,
+	// 	maxParticipants: 12,
+	// 	minParticipants: 4,
+	// 	difficulty: "easy",
+	// 	status: "active",
+	// 	images: [],
+	// 	addOns: [],
+	// 	itinerary: [],
+	// 	inclusions: ["Transportation", "Guide", "Entry fees"],
+	// 	exclusions: ["Meals", "Accommodation"],
+	// 	requirements: [],
+	// 	location: "Cape Coast",
+	// 	meetingPoint: "Cape Coast Castle",
+	// 	isPopular: false,
+	// 	isFeatured: false,
+	// 	availableDates: [],
+	// 	unavailableDates: [],
+	// 	createdAt: "2024-01-05T00:00:00Z",
+	// 	updatedAt: "2024-01-10T00:00:00Z"
+	// }
 ];
 
 export const mockBookings: Booking[] = [
-	{
-		id: "BK001",
-		packageId: "PKG001",
-		packageName: "Safari Adventure",
-		customer: {
-			id: "CUST001",
-			firstName: "John",
-			lastName: "Doe",
-			email: "john.doe@email.com",
-			phone: "+233 24 123 4567",
-			nationality: "American"
-		},
-		guideId: "GD001",
-		guideName: "Sarah Johnson",
-		startDate: "2024-02-15",
-		endDate: "2024-02-18",
-		participants: 4,
-		totalAmount: 2400,
-		paidAmount: 2400,
-		status: "confirmed",
-		paymentStatus: "paid",
-		specialRequests: "Vegetarian meals required",
-		createdAt: "2024-01-15T10:30:00Z",
-		updatedAt: "2024-01-16T14:20:00Z",
-		addOns: []
-	},
-	{
-		id: "BK002",
-		packageId: "PKG002",
-		packageName: "Cultural Heritage Tour",
-		customer: {
-			id: "CUST002",
-			firstName: "Emma",
-			lastName: "Wilson",
-			email: "emma.wilson@email.com",
-			phone: "+233 20 987 6543",
-			nationality: "British"
-		},
-		startDate: "2024-02-20",
-		endDate: "2024-02-22",
-		participants: 2,
-		totalAmount: 1200,
-		paidAmount: 600,
-		status: "pending",
-		paymentStatus: "pending",
-		createdAt: "2024-01-18T09:15:00Z",
-		updatedAt: "2024-01-18T09:15:00Z",
-		addOns: []
-	}
+	// {
+	// 	id: "BK001",
+	// 	packageId: "PKG001",
+	// 	packageName: "Safari Adventure",
+	// 	customer: {
+	// 		id: "CUST001",
+	// 		firstName: "John",
+	// 		lastName: "Doe",
+	// 		email: "john.doe@email.com",
+	// 		phone: "+233 24 123 4567",
+	// 		nationality: "American"
+	// 	},
+	// 	guideId: "GD001",
+	// 	guideName: "Sarah Johnson",
+	// 	startDate: "2024-02-15",
+	// 	endDate: "2024-02-18",
+	// 	participants: 4,
+	// 	totalAmount: 2400,
+	// 	paidAmount: 2400,
+	// 	status: "confirmed",
+	// 	paymentStatus: "paid",
+	// 	specialRequests: "Vegetarian meals required",
+	// 	createdAt: "2024-01-15T10:30:00Z",
+	// 	updatedAt: "2024-01-16T14:20:00Z",
+	// 	addOns: []
+	// },
+	// {
+	// 	id: "BK002",
+	// 	packageId: "PKG002",
+	// 	packageName: "Cultural Heritage Tour",
+	// 	customer: {
+	// 		id: "CUST002",
+	// 		firstName: "Emma",
+	// 		lastName: "Wilson",
+	// 		email: "emma.wilson@email.com",
+	// 		phone: "+233 20 987 6543",
+	// 		nationality: "British"
+	// 	},
+	// 	startDate: "2024-02-20",
+	// 	endDate: "2024-02-22",
+	// 	participants: 2,
+	// 	totalAmount: 1200,
+	// 	paidAmount: 600,
+	// 	status: "pending",
+	// 	paymentStatus: "pending",
+	// 	createdAt: "2024-01-18T09:15:00Z",
+	// 	updatedAt: "2024-01-18T09:15:00Z",
+	// 	addOns: []
+	// }
 ];
 
 export const mockGuides: Guide[] = [
-	{
-		id: "GD001",
-		firstName: "Sarah",
-		lastName: "Johnson",
-		email: "sarah.johnson@savannahtrail.com",
-		phone: "+233 24 123 4567",
-		bio: "Experienced wildlife guide with 8 years in the field. Specializes in bird watching and photography tours.",
-		experience: 8,
-		languages: ["English", "Twi", "French"],
-		specialties: [
-			"Wildlife Photography",
-			"Bird Watching",
-			"Cultural Tours"
-		],
-		status: "active",
-		avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-		rating: 4.9,
-		totalTours: 156,
-		joinedAt: "2020-03-15T00:00:00Z",
-		availability: [],
-		certifications: ["Wildlife Guide Certification", "First Aid Certified"],
-		emergencyContact: {
-			name: "Michael Johnson",
-			phone: "+233 20 987 6543",
-			relationship: "Spouse"
-		}
-	},
-	{
-		id: "GD002",
-		firstName: "Kwame",
-		lastName: "Asante",
-		email: "kwame.asante@savannahtrail.com",
-		phone: "+233 26 789 0123",
-		bio: "Cultural heritage specialist with deep knowledge of Ghanaian history and traditions.",
-		experience: 12,
-		languages: ["English", "Twi", "Ga", "Ewe"],
-		specialties: [
-			"Cultural Heritage",
-			"Historical Sites",
-			"Traditional Crafts"
-		],
-		status: "active",
-		avatar: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-		rating: 4.8,
-		totalTours: 203,
-		joinedAt: "2018-07-22T00:00:00Z",
-		availability: [],
-		certifications: [
-			"Cultural Guide Certification",
-			"Tourism Board License"
-		],
-		emergencyContact: {
-			name: "Akosua Asante",
-			phone: "+233 24 456 7890",
-			relationship: "Sister"
-		}
-	},
-	{
-		id: "GD003",
-		firstName: "Fatima",
-		lastName: "Abdul",
-		email: "fatima.abdul@savannahtrail.com",
-		phone: "+233 27 345 6789",
-		bio: "Adventure tour specialist focusing on hiking and outdoor activities in northern Ghana.",
-		experience: 5,
-		languages: ["English", "Hausa", "Dagbani"],
-		specialties: ["Adventure Tours", "Hiking", "Northern Ghana"],
-		status: "on_leave",
-		avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-		rating: 4.7,
-		totalTours: 89,
-		joinedAt: "2021-11-10T00:00:00Z",
-		availability: [],
-		certifications: [
-			"Adventure Guide Certification",
-			"Mountain Safety Course"
-		],
-		emergencyContact: {
-			name: "Ibrahim Abdul",
-			phone: "+233 20 123 4567",
-			relationship: "Father"
-		}
-	}
+	// {
+	// 	id: "GD001",
+	// 	firstName: "Sarah",
+	// 	lastName: "Johnson",
+	// 	email: "sarah.johnson@savannahtrail.com",
+	// 	phone: "+233 24 123 4567",
+	// 	bio: "Experienced wildlife guide with 8 years in the field. Specializes in bird watching and photography tours.",
+	// 	experience: 8,
+	// 	languages: ["English", "Twi", "French"],
+	// 	specialties: [
+	// 		"Wildlife Photography",
+	// 		"Bird Watching",
+	// 		"Cultural Tours"
+	// 	],
+	// 	status: "active",
+	// 	avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+	// 	rating: 4.9,
+	// 	totalTours: 156,
+	// 	joinedAt: "2020-03-15T00:00:00Z",
+	// 	availability: [],
+	// 	certifications: ["Wildlife Guide Certification", "First Aid Certified"],
+	// 	emergencyContact: {
+	// 		name: "Michael Johnson",
+	// 		phone: "+233 20 987 6543",
+	// 		relationship: "Spouse"
+	// 	}
+	// },
+	// {
+	// 	id: "GD002",
+	// 	firstName: "Kwame",
+	// 	lastName: "Asante",
+	// 	email: "kwame.asante@savannahtrail.com",
+	// 	phone: "+233 26 789 0123",
+	// 	bio: "Cultural heritage specialist with deep knowledge of Ghanaian history and traditions.",
+	// 	experience: 12,
+	// 	languages: ["English", "Twi", "Ga", "Ewe"],
+	// 	specialties: [
+	// 		"Cultural Heritage",
+	// 		"Historical Sites",
+	// 		"Traditional Crafts"
+	// 	],
+	// 	status: "active",
+	// 	avatar: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+	// 	rating: 4.8,
+	// 	totalTours: 203,
+	// 	joinedAt: "2018-07-22T00:00:00Z",
+	// 	availability: [],
+	// 	certifications: [
+	// 		"Cultural Guide Certification",
+	// 		"Tourism Board License"
+	// 	],
+	// 	emergencyContact: {
+	// 		name: "Akosua Asante",
+	// 		phone: "+233 24 456 7890",
+	// 		relationship: "Sister"
+	// 	}
+	// },
+	// {
+	// 	id: "GD003",
+	// 	firstName: "Fatima",
+	// 	lastName: "Abdul",
+	// 	email: "fatima.abdul@savannahtrail.com",
+	// 	phone: "+233 27 345 6789",
+	// 	bio: "Adventure tour specialist focusing on hiking and outdoor activities in northern Ghana.",
+	// 	experience: 5,
+	// 	languages: ["English", "Hausa", "Dagbani"],
+	// 	specialties: ["Adventure Tours", "Hiking", "Northern Ghana"],
+	// 	status: "on_leave",
+	// 	avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+	// 	rating: 4.7,
+	// 	totalTours: 89,
+	// 	joinedAt: "2021-11-10T00:00:00Z",
+	// 	availability: [],
+	// 	certifications: [
+	// 		"Adventure Guide Certification",
+	// 		"Mountain Safety Course"
+	// 	],
+	// 	emergencyContact: {
+	// 		name: "Ibrahim Abdul",
+	// 		phone: "+233 20 123 4567",
+	// 		relationship: "Father"
+	// 	}
+	// }
 ];
 
 export const mockPaymentEvents: PaymentEvent[] = [
