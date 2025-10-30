@@ -25,6 +25,7 @@ import { uploadFiles } from "@/lib/utils";
 import { Guide } from "@/types/guide";
 import { createGuide, updateGuide } from "@/lib/actions/guides";
 import { routes } from "@/app/routes";
+import { PhoneInput } from "../ui/phone-input";
 
 const guideSchema = z.object({
     name: z.string().min(1, 'First name is required'),
@@ -227,10 +228,11 @@ const CreateGuide = ({ data: guideData }: { data?: Guide }) => {
                                                 <div className='space-y-2 items-center justify-between'>
                                                     <FormLabel className='capitalize'>Phone Number *</FormLabel>
                                                     <FormControl>
-                                                        <Input
+                                                        <PhoneInput
+                                                            defaultCountry="GH"
+                                                            placeholder="020 123 4567"
+                                                            className="w-full"
                                                             {...field}
-                                                            placeholder="Eg: 233244123456"
-                                                            {...form.register('phone')}
                                                         />
                                                     </FormControl>
                                                 </div>

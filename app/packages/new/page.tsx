@@ -1,5 +1,3 @@
-'use client';
-
 import CreatePackage from "@/components/packages/create-package";
 import { MainLayout } from '@/components/layout/main-layout';
 import BackButton from "@/components/ui/back-button";

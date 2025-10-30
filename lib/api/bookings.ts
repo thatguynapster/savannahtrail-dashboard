@@ -1,6 +1,11 @@
 import { apiClient } from "./client";
 import queryString from "query-string";
-import { Booking, BookingFilters, BookingUpdateRequest } from "@/types/booking";
+import {
+	Booking,
+	BookingCreateRequest,
+	BookingFilters,
+	BookingUpdateRequest
+} from "@/types/booking";
 import { APIResponse } from "@/types/api";
 
 export interface BookingsResponse {
@@ -11,6 +16,19 @@ export interface BookingsResponse {
 }
 
 export const bookingsApi = {
+	createBooking: async (
+		data: BookingCreateRequest
+	): Promise<APIResponse<Booking>> => {
+		try {
+			return apiClient.post<APIResponse<Booking>>(
+				"/bookings/create",
+				data
+			);
+		} catch (error) {
+			throw new Error("Failed to create package", { cause: error });
+		}
+	},
+
 	getBookings: async (
 		page = 1,
 		limit = 10,
@@ -38,8 +56,12 @@ export const bookingsApi = {
 		);
 	},
 
-	getBooking: async (id: string): Promise<APIResponse<BookingsResponse>> => {
-		return apiClient.get<APIResponse<BookingsResponse>>(`/bookings/${id}`);
+	getBooking: async (id: string): Promise<APIResponse<Booking>> => {
+		return apiClient.get<APIResponse<Booking>>(
+			`/bookings/${id}?${queryString.stringify({
+				invoice: true
+			})}`
+		);
 	},
 
 	updateBooking: async (
@@ -61,8 +83,10 @@ export const bookingsApi = {
 		return apiClient.post<{ url: string }>(`/bookings/${id}/invoice`);
 	},
 
-	reassignGuide: async (id: string, guideId: string): Promise<void> => {
-		return apiClient.post<void>(`/bookings/${id}/reassign`, { guideId });
+	reassignGuide: async (id: string, guide_id: string): Promise<void> => {
+		return apiClient.post<void>(`/bookings/${id}/reassign-guide`, {
+			guide_id
+		});
 	},
 
 	bulkUpdate: async (

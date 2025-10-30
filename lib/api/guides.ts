@@ -28,8 +28,8 @@ export const guidesApi = {
 			>(
 				`/guides?${queryString.stringify({
 					page,
-					limit
-					// ...filters
+					limit,
+					...filters
 				})}`
 			);
 		} catch (error) {

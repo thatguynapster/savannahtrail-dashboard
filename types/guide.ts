@@ -52,7 +52,7 @@ export interface GuideCreateRequest {
 }
 
 export interface GuideFilters {
-	status?: GuideStatus[];
+	status?: GuideStatus;
 	languages?: string[];
 	specialties?: string[];
 	search?: string;

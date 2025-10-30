@@ -1,15 +1,4 @@
-'use client';
-
-import {
-  ArrowLeft,
-  Users,
-  MapPin,
-  Phone,
-  Mail,
-  Download,
-  UserCheck,
-  Check,
-} from 'lucide-react';
+import { ArrowLeft, Users, Phone, Mail, Download, UserCheck, Check } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -17,33 +6,45 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Separator } from '@/components/ui/separator';
+import { bookingsApi } from "@/lib/api/bookings";
+import { guidesApi } from "@/lib/api/guides";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { mockBookings } from "@/data/dummy";
-import { Booking } from "@/types/booking";
-import { useState } from "react";
-import { DetailSkeleton } from "@/components/loading/detail-skeleton";
+import { parseCurrency } from "@/lib/utils";
+import { routes } from "@/app/routes";
+import { Guide } from '@/types/guide';
+import AssignGuideButton from "@/components/bookings/assign-guide-button";
 
+interface Props { params: { id: string } };
 
-export default function BookingDetailPage() {
-  const params = useParams();
-  const bookingId = params.id as string;
-  const [isLoading, setIsLoading] = useState(false);
+export default async function BookingDetailPage({ params: { id } }: Props) {
+  const { responses: booking } = await bookingsApi.getBooking(id);
+  console.log('booking:', booking);
 
-  const mockBooking = mockBookings.find(b => b.id === bookingId) as Booking;
+  let assignedGuide: Guide | null = null;
+  if (booking.assigned_guide_id) {
+    try {
+      const guideResponse = await guidesApi.getGuide(booking.assigned_guide_id);
+      console.log('guideResponse:', guideResponse);
+      assignedGuide = guideResponse.responses;
+    } catch (error) {
+      console.error('Failed to fetch guide details:', error);
+    }
+  }
 
-  // const { data: booking, isLoading } = useQuery({
-  //   queryKey: ['booking', bookingId],
-  //   queryFn: () => bookingsApi.getBooking(bookingId),
-  //   initialData: mockBooking,
-  // });
-
-  const booking = mockBooking;
-
-  if (isLoading) {
+  if (!booking) {
     return (
       <MainLayout>
-        <DetailSkeleton />
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold">Booking not found</h2>
+          <p className="text-muted-foreground mt-2">The booking you're looking for doesn't exist.</p>
+          <Button asChild className="mt-4">
+            <Link href={routes.bookings.index}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Bookings
+            </Link>
+          </Button>
+        </div>
       </MainLayout>
     );
   }
@@ -63,7 +64,7 @@ export default function BookingDetailPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/bookings">
@@ -72,22 +73,19 @@ export default function BookingDetailPage() {
               </Link>
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">Booking {booking.id}</h1>
+              <h1 className="text-2xl font-bold"> Booking <span className="uppercase"> {booking._id.substring(booking._id.length - 7, booking._id.length)} </span> </h1>
               <p className="text-muted-foreground">
-                Created on {format(new Date(booking.createdAt), 'MMM dd, yyyy')}
+                Created on {format(new Date(booking.created_at), 'MMM dd, yyyy')}
               </p>
             </div>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <Button variant="outline">
               <Download className="mr-2 h-4 w-4" />
               Download Invoice
             </Button>
-            <Button variant="outline">
-              <UserCheck className="mr-2 h-4 w-4" />
-              Reassign Guide
-            </Button>
-            {booking.status === 'pending' && (
+            <AssignGuideButton booking_id={booking._id} />
+            {booking.booking_status === 'pending' && (
               <Button>
                 <Check className="mr-2 h-4 w-4" />
                 Confirm Booking
@@ -108,19 +106,15 @@ export default function BookingDetailPage() {
                   <h4 className="font-semibold">Package Information</h4>
                   <div className="space-y-1">
                     <p className="text-sm">
-                      <span className="font-medium">Package:</span> {booking.packageName}
+                      {/* TODO: find correct reference for this */}
+                      {/* <span className="font-medium">Package:</span> {booking.packageName} */}
                     </p>
                     <p className="text-sm">
-                      <span className="font-medium">Duration:</span> {format(new Date(booking.startDate), 'MMM dd')} - {format(new Date(booking.endDate), 'MMM dd, yyyy')}
+                      <span className="font-medium">Booking Date:</span> {format(booking.tour_date, 'dd MMM, yyyy')}
                     </p>
                     <p className="text-sm">
-                      <span className="font-medium">Participants:</span> {booking.participants} people
+                      <span className="font-medium">Participants:</span> {booking.num_guests} people
                     </p>
-                    {booking.guideName && (
-                      <p className="text-sm">
-                        <span className="font-medium">Guide:</span> {booking.guideName}
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -129,39 +123,62 @@ export default function BookingDetailPage() {
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium">Booking:</span>
-                      <Badge className={getStatusColor(booking.status)}>
-                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                      <Badge className={getStatusColor(booking.booking_status)}>
+                        {booking.booking_status.charAt(0).toUpperCase() + booking.booking_status.slice(1)}
                       </Badge>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    {/* TODO: figure out the right reference for this */}
+                    {/* <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium">Payment:</span>
                       <Badge className={getStatusColor(booking.paymentStatus)}>
                         {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                       </Badge>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
 
-              <Separator />
+              {assignedGuide && (
+                <>
+                  <Separator />
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">Assigned Guide</h4>
+                    <div className="flex items-center space-x-4">
+                      {assignedGuide.photo_url && (
+                        <img
+                          src={assignedGuide.photo_url}
+                          alt={assignedGuide.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      )}
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{assignedGuide.name}</p>
+                        <div className="flex items-center space-x-2">
+                          <Mail className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">{assignedGuide.email}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Phone className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">{assignedGuide.phone}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
 
-              <div className="space-y-2">
-                <h4 className="font-semibold">Special Requests</h4>
-                <p className="text-sm text-muted-foreground">
-                  {booking.specialRequests || 'No special requests'}
-                </p>
-              </div>
+              {/* <Separator /> */}
 
-              {booking.addOns.length > 0 && (
+              {booking.addons.length > 0 && (
                 <>
                   <Separator />
                   <div className="space-y-2">
                     <h4 className="font-semibold">Add-ons</h4>
                     <div className="space-y-2">
-                      {booking.addOns.map((addOn) => (
-                        <div key={addOn.id} className="flex justify-between text-sm">
-                          <span>{addOn.name} (x{addOn.quantity})</span>
-                          <span>GHS {(addOn.price * addOn.quantity).toLocaleString()}</span>
+                      {booking.addons.map((addOn) => (
+                        <div key={addOn.name} className="flex justify-between text-sm">
+                          <span>{addOn.name}</span>
+                          <span> {parseCurrency(addOn.price)}</span>
                         </div>
                       ))}
                     </div>
@@ -182,20 +199,16 @@ export default function BookingDetailPage() {
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">
-                      {booking.customer.firstName} {booking.customer.lastName}
+                      {booking.guest_name}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{booking.customer.email}</span>
+                    <span className="text-sm">{booking.guest_email}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{booking.customer.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{booking.customer.nationality}</span>
+                    <span className="text-sm">{booking.guest_phone}</span>
                   </div>
                 </div>
               </CardContent>
@@ -209,31 +222,32 @@ export default function BookingDetailPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal:</span>
-                    <span>GHS {(booking.totalAmount - booking.addOns.reduce((sum, addon) => sum + (addon.price * addon.quantity), 0)).toLocaleString()}</span>
+                    <span> {parseCurrency(booking.total_amount - booking.addons.reduce((sum, addon) => sum + (addon.price), 0))}</span>
                   </div>
-                  {booking.addOns.map((addOn) => (
-                    <div key={addOn.id} className="flex justify-between text-sm text-muted-foreground">
+                  {booking.addons.map((addOn) => (
+                    <div key={addOn.name} className="flex justify-between text-sm text-muted-foreground">
                       <span>{addOn.name}:</span>
-                      <span>GHS {(addOn.price * addOn.quantity).toLocaleString()}</span>
+                      <span> {parseCurrency(addOn.price)}</span>
                     </div>
                   ))}
                   <Separator />
                   <div className="flex justify-between font-medium">
                     <span>Total:</span>
-                    <span>GHS {booking.totalAmount.toLocaleString()}</span>
+                    <span> {parseCurrency(booking.total_amount)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  {/* TODO: get right values from invoice details */}
+                  {/* <div className="flex justify-between text-sm">
                     <span>Paid:</span>
                     <span className="text-green-600">GHS {booking.paidAmount.toLocaleString()}</span>
-                  </div>
-                  {booking.totalAmount > booking.paidAmount && (
+                  </div> */}
+                  {/* {booking.total_amount > booking.paidAmount && (
                     <div className="flex justify-between text-sm">
                       <span>Outstanding:</span>
                       <span className="text-red-600">
                         GHS {(booking.totalAmount - booking.paidAmount).toLocaleString()}
                       </span>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </CardContent>
             </Card>

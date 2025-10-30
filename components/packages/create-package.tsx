@@ -384,7 +384,6 @@ const CreatePackage = ({ data: packageData }: { data?: Package }) => {
                                                                     <Input
                                                                         {...field}
                                                                         placeholder="e.g., Professional Photography"
-
                                                                     />
                                                                 </>
                                                             </FormControl>
